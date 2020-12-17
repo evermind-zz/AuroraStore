@@ -133,7 +133,7 @@ public class AuroraApplication extends MultiDexApplication {
         builder.setDeleteOldUnsentReportsOnApplicationStart(true);
         builder.setDeleteUnapprovedReportsOnApplicationStart(true);
 
-        ACRA.init(this, builder);
+        //ACRA.init(this, builder);
     }
 
     @Override
