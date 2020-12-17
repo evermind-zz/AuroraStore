@@ -21,7 +21,6 @@
 package com.aurora.store;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,10 +50,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import androidx.multidex.MultiDexApplication;
 import io.reactivex.plugins.RxJavaPlugins;
 
 @AcraCore(logcatArguments = {"-t", "200", "-v", "time"})
-public class AuroraApplication extends Application {
+public class AuroraApplication extends MultiDexApplication {
 
     public static GooglePlayAPI api = null;
     private static RxBus rxBus = null;
