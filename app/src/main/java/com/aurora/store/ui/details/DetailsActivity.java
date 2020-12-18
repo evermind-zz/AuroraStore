@@ -62,7 +62,6 @@ import com.aurora.store.ui.single.activity.BaseActivity;
 import com.aurora.store.ui.single.activity.DownloadsActivity;
 import com.aurora.store.ui.single.activity.ManualDownloadActivity;
 import com.aurora.store.ui.view.ViewFlipper2;
-import com.aurora.store.util.Accountant;
 import com.aurora.store.util.CompatUtil;
 import com.aurora.store.util.ContextUtil;
 import com.aurora.store.util.Log;

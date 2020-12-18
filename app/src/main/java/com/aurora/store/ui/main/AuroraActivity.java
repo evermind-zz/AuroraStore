@@ -21,7 +21,6 @@
 package com.aurora.store.ui.main;
 
 import android.Manifest;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -38,6 +37,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.GravityCompat;
@@ -189,7 +189,7 @@ public class AuroraActivity extends BaseActivity {
     @OnClick({R.id.search_bar, R.id.action2})
     public void openSearchActivity() {
         Intent intent = new Intent(this, SearchActivity.class);
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this);
         startActivity(intent, options.toBundle());
     }
 
