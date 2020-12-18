@@ -1,3 +1,9 @@
+### This is a fork of Aurora Store that focus on KitKat atm Sdk v19
+* This is only tested on Emulator KitKat 4.4
+* The Theme may be messed up.
+* The app is called 'Aurora Store legacy'
+* The focus is only on KitKat. But it should also run on later versions of Android
+
 <img src="https://img.xda-cdn.com/1alP20gvsfJQN9MXLIcblm7aWSo=/https%3A%2F%2Fi.ibb.co%2FScPXnxz%2FFG-2.png" alt="Aurora Logo"><br/><img src="https://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL v3 Logo">
 
 # Aurora Store: A Google Playstore Client
