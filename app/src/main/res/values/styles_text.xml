@@ -18,7 +18,7 @@
   ~
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="TextAppearance.Aurora.Title" parent="TextAppearance.AppCompat.Medium">
         <item name="android:ellipsize">end</item>
@@ -37,7 +37,6 @@
 
     <style name="TextAppearance.Aurora.Line2" parent="TextAppearance.Aurora.Line1">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="TextAppearance.Aurora.Line3" parent="TextAppearance.Aurora.Line2">
@@ -53,13 +52,13 @@
     </style>
 
     <style name="TextAppearance.Aurora.SubTitle" parent="TextAppearance.Aurora.Title">
-        <item name="android:letterSpacing">0.025</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.025</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TextAppearance.Aurora.BottomNav.Active" parent="TextAppearance.Aurora.Line1">
         <item name="android:textStyle">bold</item>
-        <item name="android:letterSpacing">0.025</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.025</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -68,7 +67,7 @@
     </style>
 
     <style name="TextAppearance.Aurora.Button" parent="TextAppearance.Aurora.Line1">
-        <item name="android:letterSpacing">0.050</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">0.050</item>
         <item name="android:maxLines">1</item>
     </style>
 
