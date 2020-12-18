@@ -32,6 +32,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import com.aurora.store.util.SystemProperties;
 import com.dragons.aurora.playstoreapiv2.AndroidBuildProto;
 import com.dragons.aurora.playstoreapiv2.AndroidCheckinProto;
 import com.dragons.aurora.playstoreapiv2.AndroidCheckinRequest;
@@ -56,8 +57,17 @@ public class NativeDeviceInfoProvider implements DeviceInfoProvider {
     private String simOperator = "";
     private NativeGsfVersionProvider gsfVersionProvider;
 
+    private static String[] getCpuAbi() {
+        String val[] = new String[1];
+        val[0] = SystemProperties.read("ro.product.cpu.abi");
+        return val;
+    }
     public static List<String> getPlatforms() {
-        return Arrays.asList(Build.SUPPORTED_ABIS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return Arrays.asList(Build.SUPPORTED_ABIS);
+        } else {
+            return Arrays.asList(getCpuAbi());
+        }
     }
 
     public static List<String> getFeatures(Context context) {
