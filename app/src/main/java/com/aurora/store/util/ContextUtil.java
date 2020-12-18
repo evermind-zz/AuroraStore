@@ -20,12 +20,13 @@
 
 package com.aurora.store.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ContextUtil {
 
@@ -64,10 +65,10 @@ public class ContextUtil {
     }
 
     public static boolean isAlive(Context context) {
-        if (!(context instanceof Activity)) {
+        if (!(context instanceof AppCompatActivity)) {
             return false;
         }
-        Activity activity = (Activity) context;
+        AppCompatActivity activity = (AppCompatActivity) context;
         return !activity.isDestroyed();
     }
 }

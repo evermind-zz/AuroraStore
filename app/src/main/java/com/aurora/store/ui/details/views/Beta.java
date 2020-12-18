@@ -20,7 +20,6 @@
 
 package com.aurora.store.ui.details.views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -45,6 +44,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
 
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -76,7 +76,7 @@ public class Beta extends AbstractDetails {
         super(activity, app);
     }
 
-    static private void restartActivity(Activity activity) {
+    static private void restartActivity(AppCompatActivity activity) {
         activity.finish();
         activity.overridePendingTransition(0, 0);
         activity.startActivity(activity.getIntent());
