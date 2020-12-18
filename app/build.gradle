@@ -25,7 +25,7 @@ android {
     defaultConfig {
         multiDexEnabled true
 
-        applicationId "com.aurora.store"
+        applicationId "com.aurora.store.legacy"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 29
@@ -49,7 +49,7 @@ android {
     }
     buildTypes {
         debug {
-            resValue "string", "app_name", "Aurora Store - Debug"
+            resValue "string", "app_name", "Aurora Store legacy - Debug"
         }
         release {
             minifyEnabled true
@@ -57,12 +57,12 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
-            resValue "string", "app_name", "Aurora Store"
+            resValue "string", "app_name", "Aurora Store legacy"
         }
         beta {
             initWith release
             applicationIdSuffix = ".beta"
-            resValue "string", "app_name", "Aurora Store - Beta"
+            resValue "string", "app_name", "Aurora Store legacy - Beta"
         }
     }
     compileOptions {
