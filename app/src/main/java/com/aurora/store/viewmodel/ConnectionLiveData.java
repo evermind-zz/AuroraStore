@@ -5,16 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
-import android.os.Build;
 
 import androidx.lifecycle.LiveData;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.aurora.store.model.ConnectionModel;
-
-import org.jetbrains.annotations.NotNull;
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 
 public class ConnectionLiveData extends LiveData<ConnectionModel> {
 
@@ -22,33 +19,25 @@ public class ConnectionLiveData extends LiveData<ConnectionModel> {
 
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
 
+        private Disposable disposable = null;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getExtras() != null) {
-                final Object object = context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                final ConnectivityManager manager = (ConnectivityManager) object;
+                if (disposable != null)
+                    disposable.dispose();
 
-                if (manager != null) {
-                    final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
-                        @Override
-                        public void onAvailable(@NotNull Network network) {
-                            postValue(new ConnectionModel("ONLINE", true));
-                        }
-
-                        @Override
-                        public void onLost(@NotNull Network network) {
-                            postValue(new ConnectionModel("OFFLINE", false));
-                        }
-                    };
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        manager.registerDefaultNetworkCallback(networkCallback);
-                    } else {
-                        final NetworkRequest networkRequest = new NetworkRequest.Builder()
-                                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
-                        manager.registerNetworkCallback(networkRequest, networkCallback);
-                    }
-                }
+                disposable = ReactiveNetwork
+                        .observeNetworkConnectivity(context)
+                        .observeOn(Schedulers.io())
+                        .flatMapSingle(connectivity -> ReactiveNetwork.checkInternetConnectivity())
+                        .subscribe(isConnected -> {
+                            if (isConnected) {
+                                postValue(new ConnectionModel("ONLINE", true));
+                            } else {
+                                postValue(new ConnectionModel("OFFLINE", false));
+                            }
+                        });
             }
         }
     };
