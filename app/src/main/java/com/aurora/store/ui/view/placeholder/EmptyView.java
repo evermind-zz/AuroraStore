@@ -68,10 +68,10 @@ public class EmptyView extends RelativeLayout {
 
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.EmptyView);
         final String txt = typedArray.getString(R.styleable.EmptyView_emptyText);
-        final Drawable drawable = typedArray.getDrawable(R.styleable.EmptyView_emptyImage);
+        int id = typedArray.getResourceId(R.styleable.EmptyView_emptyImage,-1);
 
         txtEmpty.setText(StringUtils.isEmpty(txt) ? getResources().getString(R.string.action_loading) : txt);
-        imgEmpty.setImageDrawable(drawable);
+        imgEmpty.setImageResource(id);
         typedArray.recycle();
     }
 }
