@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 
 import com.aurora.store.util.NetworkInterceptor;
+import com.aurora.store.util.NetworkUtil;
 import com.aurora.store.util.Util;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
@@ -60,7 +61,8 @@ public class AuroraGlide extends AppGlideModule {
     }
 
     private static OkHttpClient getOkHttpClient(Context context) {
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        final OkHttpClient.Builder builder = NetworkUtil.createOkHttpClientBuilder();
+
         if (Util.isNetworkProxyEnabled(context))
             builder.proxy(Util.getNetworkProxy(context));
         if (BuildConfig.DEBUG) {

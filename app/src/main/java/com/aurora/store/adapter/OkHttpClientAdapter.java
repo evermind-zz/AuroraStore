@@ -28,6 +28,7 @@ import com.aurora.store.exception.MalformedRequestException;
 import com.aurora.store.exception.TooManyRequestsException;
 import com.aurora.store.exception.UnknownException;
 import com.aurora.store.util.NetworkInterceptor;
+import com.aurora.store.util.NetworkUtil;
 import com.aurora.store.util.Util;
 import com.dragons.aurora.playstoreapiv2.AuthException;
 import com.dragons.aurora.playstoreapiv2.GooglePlayAPI;
@@ -59,7 +60,7 @@ public class OkHttpClientAdapter extends HttpClientAdapter {
     private OkHttpClient client;
 
     public OkHttpClientAdapter(Context context) {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        OkHttpClient.Builder builder = NetworkUtil.createOkHttpClientBuilder()
                 .connectTimeout(20, TimeUnit.SECONDS)
                 .readTimeout(20, TimeUnit.SECONDS)
                 .writeTimeout(20, TimeUnit.SECONDS)

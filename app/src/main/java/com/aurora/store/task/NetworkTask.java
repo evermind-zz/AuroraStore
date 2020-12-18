@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 
 import com.aurora.store.BuildConfig;
 import com.aurora.store.util.NetworkInterceptor;
+import com.aurora.store.util.NetworkUtil;
 import com.aurora.store.util.Util;
 
 import okhttp3.OkHttpClient;
@@ -21,7 +22,7 @@ public class NetworkTask extends ContextWrapper {
     }
 
     private static OkHttpClient getOkHttpClient(Context context) {
-        final OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        final OkHttpClient.Builder builder = NetworkUtil.createOkHttpClientBuilder();
         if (Util.isNetworkProxyEnabled(context))
             builder.proxy(Util.getNetworkProxy(context));
         if (BuildConfig.DEBUG) {

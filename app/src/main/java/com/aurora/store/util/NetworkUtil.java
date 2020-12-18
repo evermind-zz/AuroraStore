@@ -26,6 +26,14 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import okhttp3.CipherSuite;
+import okhttp3.ConnectionSpec;
+import okhttp3.OkHttpClient;
+
 public class NetworkUtil {
 
     public static boolean isConnected(Context context) {
@@ -55,5 +63,33 @@ public class NetworkUtil {
             }
         }
         return false;
+    }
+
+    public static OkHttpClient.Builder createOkHttpClientBuilder() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            builder.sslSocketFactory(TLSSocketFactory.getInstance(), TLSSocketFactory.getTrustManager());
+            enableMoreCipherSuites(builder);
+        }
+
+        return builder;
+    }
+
+    private static OkHttpClient.Builder enableMoreCipherSuites(OkHttpClient.Builder builder) {
+        // Try to enable all modern CipherSuites (+2 more)
+        // that are supported on the device.
+        // https://github.com/square/okhttp/issues/4053#issuecomment-402579554
+        final List<CipherSuite> cipherSuites =
+                new ArrayList<>(ConnectionSpec.MODERN_TLS.cipherSuites());
+        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA);
+        cipherSuites.add(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA);
+        final ConnectionSpec legacyTLS = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                .cipherSuites(cipherSuites.toArray(new CipherSuite[0]))
+                .build();
+
+        builder.connectionSpecs(Arrays.asList(legacyTLS, ConnectionSpec.CLEARTEXT));
+
+        return builder;
     }
 }
