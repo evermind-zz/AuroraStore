@@ -17,6 +17,7 @@ import com.aurora.store.R;
 import com.aurora.store.model.App;
 import com.aurora.store.util.Log;
 import com.aurora.store.util.PrefUtil;
+import com.aurora.store.util.Util;
 import com.aurora.store.util.ViewUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -29,6 +30,12 @@ public class Uninstaller {
     }
 
     public void uninstall(App app) {
+        if (Util.isNativeInstallerEnforced(context))
+        {
+            uninstallByPackageManager(app);
+            return;
+        }
+
         String prefValue = PrefUtil.getString(context, Constants.PREFERENCE_INSTALLATION_METHOD);
         switch (prefValue) {
             case "0":
