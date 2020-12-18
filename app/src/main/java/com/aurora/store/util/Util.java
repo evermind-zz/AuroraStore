@@ -509,14 +509,17 @@ public class Util {
     }
 
     public static void clearOldInstallationSessions(Context context) {
-        final PackageInstaller packageInstaller = context.getPackageManager().getPackageInstaller();
-        for (PackageInstaller.SessionInfo sessionInfo : packageInstaller.getMySessions()) {
-            final int sessionId = sessionInfo.getSessionId();
-            try {
-                packageInstaller.abandonSession(sessionInfo.getSessionId());
-                Log.i("Abandoned session id -> %d", sessionId);
-            } catch (Exception e) {
-                Log.e(e.getMessage());
+        final PackageInstaller packageInstaller;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            packageInstaller = context.getPackageManager().getPackageInstaller();
+            for (PackageInstaller.SessionInfo sessionInfo : packageInstaller.getMySessions()) {
+                final int sessionId = sessionInfo.getSessionId();
+                try {
+                    packageInstaller.abandonSession(sessionInfo.getSessionId());
+                    Log.i("Abandoned session id -> %d", sessionId);
+                } catch (Exception e) {
+                    Log.e(e.getMessage());
+                }
             }
         }
     }
