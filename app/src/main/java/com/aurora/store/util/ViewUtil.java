@@ -36,6 +36,7 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.Transformation;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 
 public class ViewUtil {
 
@@ -157,6 +158,6 @@ public class ViewUtil {
     }
 
     public static Bundle getEmptyActivityBundle(AppCompatActivity activity) {
-        return ActivityOptions.makeSceneTransitionAnimation(activity).toBundle();
+        return ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle();
     }
 }
