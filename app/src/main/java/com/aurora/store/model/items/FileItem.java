@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.aurora.store.R;
+import com.aurora.store.util.CompatUtil;
 import com.aurora.store.util.Util;
 import com.dragons.aurora.playstoreapiv2.FileMetadata;
 import com.mikepenz.fastadapter.FastAdapter;
@@ -66,25 +67,26 @@ public class FileItem extends AbstractItem<FileItem.ViewHolder> {
             context = itemView.getContext();
         }
 
+
         @Override
         public void bindView(@NotNull FileItem item, @NotNull List<?> list) {
             final FileMetadata fileMetadata = item.getFileMetadata();
             if (fileMetadata.hasSplitId()) {
                 line1.setText(fileMetadata.getSplitId());
-                img.setImageDrawable(context.getDrawable(R.drawable.ic_file_patch));
+                CompatUtil.setImageVector(context,img,R.drawable.ic_file_patch);
             } else if (fileMetadata.hasFileType()) {
                 switch (fileMetadata.getFileType()) {
                     case 0:
                         line1.setText("Base");
-                        img.setImageDrawable(context.getDrawable(R.drawable.ic_file_apk));
+                        CompatUtil.setImageVector(context,img,R.drawable.ic_file_apk);
                         break;
                     case 1:
                         line1.setText("Obb");
-                        img.setImageDrawable(context.getDrawable(R.drawable.ic_file_obb));
+                        CompatUtil.setImageVector(context,img,R.drawable.ic_file_obb);
                         break;
                     default:
                         line1.setText("Patch");
-                        img.setImageDrawable(context.getDrawable(R.drawable.ic_file_patch));
+                        CompatUtil.setImageVector(context,img,R.drawable.ic_file_patch);
                 }
             }
             line2.setText(String.valueOf(fileMetadata.getVersionCode()));

@@ -63,6 +63,7 @@ import com.aurora.store.ui.single.activity.DownloadsActivity;
 import com.aurora.store.ui.single.activity.ManualDownloadActivity;
 import com.aurora.store.ui.view.ViewFlipper2;
 import com.aurora.store.util.Accountant;
+import com.aurora.store.util.CompatUtil;
 import com.aurora.store.util.ContextUtil;
 import com.aurora.store.util.Log;
 import com.aurora.store.util.PackageUtil;
@@ -321,7 +322,7 @@ public class DetailsActivity extends BaseActivity {
                 final Drawable drawable = packageManager.getApplicationIcon(app.getPackageName());
                 noAppImg.setImageDrawable(drawable);
             } catch (PackageManager.NameNotFoundException e) {
-                noAppImg.setImageDrawable(getDrawable(R.drawable.ic_placeholder));
+                CompatUtil.setImageVector(this,noAppImg,R.drawable.ic_placeholder);
             }
 
             noAppLine1.setText(app.getDisplayName());

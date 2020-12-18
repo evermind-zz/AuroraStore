@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aurora.store.Constants;
 import com.aurora.store.R;
+import com.aurora.store.util.CompatUtil;
 import com.aurora.store.util.PrefUtil;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.mikepenz.fastadapter.FastAdapter;
@@ -81,7 +82,7 @@ public class GeoItem extends AbstractItem<GeoItem.ViewHolder> {
         public void bindView(@NotNull GeoItem item, @NotNull List<?> list) {
             final String[] locationData = item.getLocation().split(",");
             final String lastSpoofLocation = PrefUtil.getString(context, Constants.PREFERENCE_SPOOF_GEOLOCATION);
-            img.setImageDrawable(context.getDrawable(R.drawable.ic_map_marker));
+            CompatUtil.setImageVector(context,img,R.drawable.ic_map_marker);
             line1.setText(locationData[0]);
             line2.setText(locationData[1]);
             checkbox.setChecked(item.isChecked() || lastSpoofLocation.equals(item.getLocation()));

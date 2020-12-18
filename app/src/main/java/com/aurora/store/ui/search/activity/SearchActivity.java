@@ -24,6 +24,7 @@ import com.aurora.store.model.items.SearchSuggestionItem;
 import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.ui.search.SearchSuggestionModel;
 import com.aurora.store.ui.single.activity.BaseActivity;
+import com.aurora.store.util.CompatUtil;
 import com.aurora.store.util.ContextUtil;
 import com.aurora.store.util.Util;
 import com.aurora.store.util.ViewUtil;
@@ -180,7 +181,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void setupSearch() {
-        action2.setImageDrawable(getDrawable(R.drawable.ic_cancel));
+        CompatUtil.setImageVector(this,action2,R.drawable.ic_cancel);
         action2.setOnClickListener(v -> {
             searchView.setText("");
         });
