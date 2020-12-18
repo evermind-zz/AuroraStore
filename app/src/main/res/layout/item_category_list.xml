@@ -23,7 +23,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/margin_xxsmall"
-    android:background="?android:attr/selectableItemBackground"
+    android:background="?attr/selectableItemBackground"
     android:paddingStart="@dimen/margin_normal"
     android:paddingTop="@dimen/margin_small"
     android:paddingEnd="@dimen/margin_small"

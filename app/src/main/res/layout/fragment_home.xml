@@ -54,8 +54,7 @@
                     android:maxLines="1"
                     android:paddingStart="@dimen/margin_medium"
                     android:paddingEnd="@dimen/margin_xxsmall"
-                    android:text="@string/cat_top_apps"
-                    android:textAppearance="@style/TextAppearance.Aurora.Header" />
+                    android:text="@string/cat_top_apps" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_top_apps"

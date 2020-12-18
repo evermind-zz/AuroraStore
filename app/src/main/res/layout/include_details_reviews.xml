@@ -30,16 +30,13 @@
     tools:visibility="visible">
 
     <com.google.android.material.chip.Chip
-        style="@style/Widget.MaterialComponents.Chip.Action"
+        android:theme="@style/Theme.MaterialComponents.Light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/margin_xsmall"
         android:clickable="false"
         android:text="@string/details_rating_reviews"
-        app:chipBackgroundColor="?android:attr/colorBackground"
-        app:chipStrokeColor="?android:attr/colorControlNormal"
-        app:chipStrokeWidth=".75dp"
         app:iconStartPadding="@dimen/margin_xxsmall" />
 
     <LinearLayout
@@ -160,15 +157,12 @@
         </LinearLayout>
 
         <com.google.android.material.chip.Chip
+            android:theme="@style/Theme.MaterialComponents.Light"
             android:id="@+id/review_delete"
-            style="@style/Widget.MaterialComponents.Chip.Action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/delete"
-            android:visibility="gone"
-            app:chipBackgroundColor="?android:attr/colorBackground"
-            app:chipStrokeColor="@color/colorGreyLight"
-            app:chipStrokeWidth="1dp" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <RelativeLayout
@@ -199,6 +193,6 @@
             android:focusable="false"
             android:paddingTop="@dimen/margin_small"
             android:paddingBottom="@dimen/margin_small"
-            android:src="@drawable/ic_arrow" />
+            app:srcCompat="@drawable/ic_arrow" />
     </RelativeLayout>
 </LinearLayout>

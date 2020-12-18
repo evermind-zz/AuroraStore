@@ -30,8 +30,8 @@
         android:layout_above="@id/txt_empty"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/margin_small"
-        android:src="@drawable/ic_apps"
-        app:tint="?colorAccent" />
+        app:srcCompat="@drawable/ic_apps"
+        android:tint="?colorAccent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txt_empty"

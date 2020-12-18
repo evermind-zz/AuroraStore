@@ -29,8 +29,7 @@
         android:layout_height="@dimen/icon_size_big"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_xlarge"
-        app:srcCompat="@drawable/ic_account"
-        app:tint="?android:attr/colorAccent" />
+        app:srcCompat="@drawable/ic_account" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/app_name"

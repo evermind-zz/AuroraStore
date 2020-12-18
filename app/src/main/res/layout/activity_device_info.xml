@@ -48,7 +48,7 @@
         android:text="@string/action_filter_apply"
         android:textAppearance="@style/TextAppearance.Aurora.Button"
         android:textColor="@color/colorWhite"
-        app:backgroundTint="?android:colorAccent"
+        app:backgroundTint="?attr/colorAccent"
         app:iconTint="@color/colorWhite"
         app:layout_anchorGravity="top|end" />
 

@@ -19,6 +19,7 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize"
@@ -43,7 +44,8 @@
         android:layout_marginEnd="@dimen/margin_xxsmall"
         android:layout_toStartOf="@id/btn_cancel"
         android:textSize="14sp"
-        tools:text="50%" />
+        tools:text="50%"
+        tools:ignore="RelativeOverlap" />
 
     <ProgressBar
         android:id="@+id/progress_download"
@@ -56,16 +58,14 @@
         android:indeterminate="true"
         android:max="100" />
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/progress_txt"
         android:layout_alignBottom="@id/progress_txt"
         android:layout_alignParentEnd="true"
-        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_cancel"
-        android:tint="?colorControlNormal" />
+        app:srcCompat="@drawable/ic_cancel" />
 </RelativeLayout>

@@ -80,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_small"
-                android:background="@drawable/generic_padded_bg">
+                app:background="@drawable/generic_padded_bg">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/textView"
@@ -90,7 +90,7 @@
                     android:ellipsize="end"
                     android:text="@string/manual_download_disclaimer"
                     android:textAppearance="@style/TextAppearance.Aurora.SubTitle"
-                    android:textColor="?android:attr/colorAccent" />
+                    android:textColor="?attr/colorAccent" />
 
 
                 <LinearLayout

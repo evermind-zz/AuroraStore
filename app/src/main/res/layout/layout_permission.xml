@@ -30,8 +30,7 @@
         android:layout_width="@dimen/icon_size_default"
         android:layout_height="@dimen/icon_size_default"
         android:layout_marginStart="@dimen/margin_normal"
-        android:layout_marginEnd="@dimen/margin_small"
-        android:tint="?android:attr/colorAccent" />
+        android:layout_marginEnd="@dimen/margin_small" />
 
     <LinearLayout
         android:id="@+id/permission_labels"

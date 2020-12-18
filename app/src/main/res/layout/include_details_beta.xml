@@ -27,7 +27,7 @@
     android:layout_marginStart="@dimen/margin_medium"
     android:layout_marginEnd="@dimen/margin_medium"
     android:layout_marginTop="@dimen/margin_medium"
-    android:background="@drawable/generic_padded_bg"
+    app:background="@drawable/generic_padded_bg"
     android:orientation="vertical"
     android:visibility="gone"
     tools:visibility="visible">

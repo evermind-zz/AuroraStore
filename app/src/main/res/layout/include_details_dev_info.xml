@@ -27,7 +27,7 @@
     android:layout_marginStart="@dimen/margin_medium"
     android:layout_marginTop="@dimen/margin_medium"
     android:layout_marginEnd="@dimen/margin_medium"
-    android:background="@drawable/generic_padded_bg"
+    app:background="@drawable/generic_padded_bg"
     android:orientation="vertical"
     android:visibility="invisible"
     tools:visibility="visible">
@@ -37,8 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_xxsmall"
         android:text="@string/details_dev_details"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.Aurora.SubTitle" />
+        android:textAlignment="viewStart" />
 
     <com.aurora.store.ui.view.DevInfoLayout
         android:id="@+id/layout_dev_web"

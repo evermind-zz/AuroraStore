@@ -19,13 +19,14 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/margin_medium"
     android:layout_marginTop="@dimen/margin_small"
     android:layout_marginEnd="@dimen/margin_medium"
     android:layout_marginBottom="@dimen/margin_xxsmall"
-    android:background="@drawable/generic_padded_bg">
+    app:background="@drawable/generic_padded_bg">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/prop_key"
@@ -33,7 +34,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.Aurora.Line1"
         android:textStyle="bold"
-        android:textColor="?android:attr/colorAccent" />
+        android:textColor="?attr/colorAccent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/prop_value"

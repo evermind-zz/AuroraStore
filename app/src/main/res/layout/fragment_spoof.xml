@@ -49,8 +49,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_margin="@dimen/margin_small"
                     android:contentDescription="@string/content_description_icon"
-                    android:src="@drawable/ic_menu_spoof"
-                    android:tint="?android:attr/colorAccent" />
+                    app:srcCompat="@drawable/ic_menu_spoof"
+                    app:tint="?attr/colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/device_model"
@@ -79,14 +79,14 @@
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
                 android:layout_marginBottom="@dimen/margin_normal"
-                android:background="@drawable/generic_padded_bg"
+                app:background="@drawable/generic_padded_bg"
                 android:padding="@dimen/padding_large">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/spoof_device_img"
                     android:layout_width="@dimen/icon_size_category"
                     android:layout_height="@dimen/icon_size_category"
-                    android:src="@drawable/ic_incognito"
+                    app:srcCompat="@drawable/ic_incognito"
                     android:tint="?colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -117,14 +117,14 @@
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
                 android:layout_marginBottom="@dimen/margin_normal"
-                android:background="@drawable/generic_padded_bg"
+                app:background="@drawable/generic_padded_bg"
                 android:padding="@dimen/padding_large">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/spoof_locale_img"
                     android:layout_width="@dimen/icon_size_category"
                     android:layout_height="@dimen/icon_size_category"
-                    android:src="@drawable/ic_translate"
+                    app:srcCompat="@drawable/ic_translate"
                     android:tint="?colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -155,14 +155,14 @@
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
                 android:layout_marginBottom="@dimen/margin_normal"
-                android:background="@drawable/generic_padded_bg"
+                app:background="@drawable/generic_padded_bg"
                 android:padding="@dimen/padding_large">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/spoof_geolocation_img"
                     android:layout_width="@dimen/icon_size_category"
                     android:layout_height="@dimen/icon_size_category"
-                    android:src="@drawable/ic_map_marker"
+                    app:srcCompat="@drawable/ic_map_marker"
                     android:tint="?colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -198,6 +198,6 @@
         android:text="@string/action_export_device"
         android:textAppearance="@style/TextAppearance.Aurora.Button"
         android:textColor="@color/colorWhite"
-        app:backgroundTint="?android:colorAccent"
+        app:backgroundTint="?attr/colorAccent"
         app:iconTint="@color/colorWhite" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

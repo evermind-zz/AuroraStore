@@ -30,6 +30,7 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:theme="@style/Theme.MaterialComponents.Light"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -45,7 +46,7 @@
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottom_navigation"
-                style="@style/Widget.Aurora.BottomNavigation"
+                android:theme="@style/Theme.MaterialComponents.Light"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -64,7 +65,6 @@
         android:layout_gravity="start"
         android:background="?android:attr/windowBackground"
         app:headerLayout="@layout/item_nav_header"
-        app:itemIconTint="?android:attr/colorAccent"
         app:itemTextAppearance="@style/TextAppearance.Aurora.Line2"
         app:menu="@menu/menu_drawer" />
 </androidx.drawerlayout.widget.DrawerLayout>

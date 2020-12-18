@@ -64,10 +64,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/app_size"
         android:layout_toEndOf="@id/app_size"
-        android:drawableEnd="@drawable/ic_installed"
         android:scaleX=".75"
         android:scaleY=".75"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textStyle="normal"
         android:visibility="visible" />
 </RelativeLayout>

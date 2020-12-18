@@ -36,12 +36,14 @@
         android:textStyle="bold" />
 
     <ProgressBar
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:id="@+id/avg_rating"
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/margin_xxsmall"
         android:layout_toEndOf="@+id/avg_num"
-        android:progressDrawable="@drawable/progressbar_bg"/>
+        />
+    <!-- TODO commented out during backporting to KitKat
+        android:progressDrawable="@drawable/progressbar_bg"
+    -->
 </RelativeLayout>

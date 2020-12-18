@@ -19,9 +19,10 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:background="?attr/selectableItemBackground"
     android:orientation="horizontal"
     android:padding="5dp">
 
@@ -30,7 +31,7 @@
         android:layout_width="@dimen/icon_size_medium"
         android:layout_height="@dimen/icon_size_medium"
         android:layout_margin="@dimen/margin_xxsmall"
-        android:src="@drawable/ic_placeholder" />
+        app:srcCompat="@drawable/ic_placeholder" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -85,11 +86,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@id/txt_progress"
-                android:indeterminateTint="?android:attr/colorAccent"
+                android:indeterminateTint="?attr/colorAccent"
                 android:max="100"
                 android:progress="75"
-                android:progressBackgroundTint="?android:attr/colorAccent"
-                android:progressTint="?android:attr/colorAccent" />
+                android:progressBackgroundTint="?attr/colorAccent"
+                android:progressTint="?attr/colorAccent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_progress"

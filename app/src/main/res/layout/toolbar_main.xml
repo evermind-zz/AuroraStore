@@ -23,7 +23,6 @@
     style="@style/Widget.AppBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:translationZ="1dp"
     app:elevation="1dp">
 
     <androidx.appcompat.widget.Toolbar

@@ -73,7 +73,6 @@
                     android:layout_marginStart="@dimen/margin_medium"
                     android:layout_marginEnd="@dimen/margin_medium"
                     android:layout_marginBottom="@dimen/margin_medium"
-                    android:background="@drawable/generic_bg"
                     android:gravity="center"
                     android:minHeight="?actionBarSize"
                     android:padding="@dimen/margin_small"
@@ -138,8 +137,7 @@
                         android:id="@+id/thumbnail"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:scaleType="centerCrop"
-                        android:src="?android:attr/colorPrimaryDark" />
+                        android:scaleType="centerCrop" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/video_play"
@@ -148,10 +146,8 @@
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
-                        android:background="@drawable/circle_bg_light"
-                        android:elevation="1dp"
                         android:padding="@dimen/margin_small"
-                        android:src="@drawable/ic_play" />
+                        app:srcCompat="@drawable/ic_play" />
                 </RelativeLayout>
 
                 <!-- Beta -->
@@ -177,7 +173,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:textAppearance="@style/TextAppearance.Aurora.Line2"
-                        android:textColor="?android:attr/colorAccent" />
+                        android:textColor="?attr/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

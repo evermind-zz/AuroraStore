@@ -24,10 +24,10 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="?android:attr/colorControlNormal"
+        android:fillColor="?attr/colorControlNormal"
         android:pathData="M10,8.64v6.72L15.27,12z"
         android:strokeAlpha="0.3" />
     <path
-        android:fillColor="?android:attr/colorControlNormal"
+        android:fillColor="?attr/colorControlNormal"
         android:pathData="M8,19l11,-7L8,5v14zM10,8.64L15.27,12 10,15.36L10,8.64z" />
 </vector>

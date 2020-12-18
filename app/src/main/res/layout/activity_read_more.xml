@@ -45,7 +45,7 @@
                 android:id="@+id/layout_changes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/generic_padded_bg">
+                app:background="@drawable/generic_padded_bg">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_new"
@@ -54,7 +54,7 @@
                     android:layout_marginBottom="@dimen/margin_xsmall"
                     android:text="@string/details_new_changes"
                     android:textAppearance="@style/TextAppearance.Aurora.SubTitle"
-                    android:textColor="?android:attr/colorAccent" />
+                    android:textColor="?attr/colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_changelog"
@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:background="@drawable/generic_padded_bg">
+                app:background="@drawable/generic_padded_bg">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_more"
@@ -80,7 +80,7 @@
                     android:layout_marginBottom="@dimen/margin_xsmall"
                     android:text="@string/action_more"
                     android:textAppearance="@style/TextAppearance.Aurora.SubTitle"
-                    android:textColor="?android:attr/colorAccent" />
+                    android:textColor="?attr/colorAccent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/content_readMore"
@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:background="@drawable/generic_padded_bg"
+                app:background="@drawable/generic_padded_bg"
                 android:orientation="vertical" />
 
             <RelativeLayout
@@ -105,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:background="@drawable/generic_padded_bg">
+                app:background="@drawable/generic_padded_bg">
 
                 <TextView
                     android:id="@+id/files_header"
@@ -114,7 +114,7 @@
                     android:layout_marginBottom="@dimen/margin_xsmall"
                     android:text="@string/details_files"
                     android:textAppearance="@style/TextAppearance.Aurora.SubTitle"
-                    android:textColor="?android:attr/colorAccent" />
+                    android:textColor="?attr/colorAccent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler"
