@@ -57,16 +57,24 @@ public class NativeDeviceInfoProvider implements DeviceInfoProvider {
     private String simOperator = "";
     private NativeGsfVersionProvider gsfVersionProvider;
 
-    private static String[] getCpuAbi() {
-        String val[] = new String[1];
-        val[0] = SystemProperties.read("ro.product.cpu.abi");
-        return val;
+    private static void appendToListIfNotEmpty(List<String> list, String value)
+    {
+        if (!value.equals(""))
+            list.add(value);
     }
+
+    private static List<String> getCpuAbiList() {
+        List<String> supportedAbis = new ArrayList<>();
+        appendToListIfNotEmpty(supportedAbis, SystemProperties.read("ro.product.cpu.abi"));
+        appendToListIfNotEmpty(supportedAbis, SystemProperties.read("ro.product.cpu.abi2"));
+        return supportedAbis;
+    }
+
     public static List<String> getPlatforms() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return Arrays.asList(Build.SUPPORTED_ABIS);
         } else {
-            return Arrays.asList(getCpuAbi());
+            return getCpuAbiList();
         }
     }
 
