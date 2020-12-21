@@ -1,5 +1,6 @@
 package com.aurora.store.ui.single.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -66,5 +67,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void showSnackBar(View view, @StringRes int message, View.OnClickListener onClickListener) {
         showSnackBar(view, message, 0, onClickListener);
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            super.finishAfterTransition();
+        }
     }
 }
