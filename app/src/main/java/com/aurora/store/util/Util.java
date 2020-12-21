@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aurora.store.Constants;
 import com.aurora.store.R;
+import com.aurora.store.installer.Installer;
 import com.aurora.store.receiver.UpdatesReceiver;
 import com.aurora.store.service.BulkUpdateService;
 import com.aurora.store.service.NotificationService;
@@ -307,8 +308,8 @@ public class Util {
     public static boolean isPrivilegedInstall(Context context) {
         String prefValue = PrefUtil.getString(context, Constants.PREFERENCE_INSTALLATION_METHOD);
         switch (prefValue) {
-            case "1":
-            case "2":
+            case Installer.ROOT:
+            case Installer.SERVICES:
                 return true;
             default:
                 return false;
@@ -352,7 +353,7 @@ public class Util {
 
     public static boolean isRootInstallEnabled(Context context) {
         String installMethod = getPrefs(context).getString(Constants.PREFERENCE_INSTALLATION_METHOD, "0");
-        return installMethod.equals("1");
+        return installMethod.equals(Installer.ROOT);
     }
 
     public static boolean isCustomTokenizerEnabled(Context context) {

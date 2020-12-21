@@ -242,9 +242,9 @@
     </string-array>
 
     <string-array name="pref_installation_method_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
+        <item>@string/INSTALLER_NATIVE</item>
+        <item>@string/INSTALLER_ROOT</item>
+        <item>@string/INSTALLER_SERVICES</item>
     </string-array>
 
     <string-array name="proxyTypeValues" translatable="false">

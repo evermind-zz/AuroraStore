@@ -30,4 +30,7 @@
     <string name="download_speed_mb" translatable="false">%1$s MB/s</string>
     <string name="privacy_url" translatable="false">"https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/POLICY.md"</string>
     <string name="privacy_policy_desc" translatable="false">Please read our Privacy Policy carefully.\nYou must accept it to send us the bug report.\n\nAurora OSS\'s privacy policy explains in detail what data is sent and stored when you send a crash report</string>
+    <string name="INSTALLER_NATIVE" translatable="false">0</string> <!-- must have same value than Installer.NATIVE -->
+    <string name="INSTALLER_ROOT" translatable="false">1</string> <!-- must have same value than Installer.ROOT -->
+    <string name="INSTALLER_SERVICES" translatable="false">2</string> <!-- must have same value than Installer.SERVICES -->
 </resources>

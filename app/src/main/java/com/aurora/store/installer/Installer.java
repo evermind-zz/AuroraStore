@@ -59,6 +59,9 @@ import java.util.Map;
 
 public class Installer implements AppInstallerAbstract.InstallationStatusListener {
 
+    public static final String NATIVE = "0"; // the same value have to be here: R.string.INSTALLER_NATIVE
+    public static final String ROOT = "1"; // the same value have to be here: R.string.INSTALLER_ROOT
+    public static final String SERVICES = "2"; // the same value have to be here: R.string.INSTALLER_SERVICES
     private Context context;
     private Map<String, App> appHashMap = new HashMap<>();
     private AppInstallerAbstract packageInstaller;
@@ -186,9 +189,9 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
     private AppInstallerAbstract getInstallationMethod(Context context) {
         String prefValue = PrefUtil.getString(context, Constants.PREFERENCE_INSTALLATION_METHOD);
         switch (prefValue) {
-            case "1":
+            case Installer.ROOT:
                 return AppInstallerRooted.getInstance(context);
-            case "2":
+            case Installer.SERVICES:
                 return AppInstallerPrivileged.getInstance(context);
             default:
                 return AppInstaller.getInstance(context);

@@ -38,12 +38,12 @@ public class Uninstaller {
 
         String prefValue = PrefUtil.getString(context, Constants.PREFERENCE_INSTALLATION_METHOD);
         switch (prefValue) {
-            case "0":
-            case "2":
+            case Installer.NATIVE:
+            case Installer.SERVICES:
                 uninstallByPackageManager(app);
                 break;
-            case "1":
-                askUninstall(app);
+            case Installer.ROOT:
+                askRootUninstall(app);
                 break;
             default:
                 uninstallByPackageManager(app);
@@ -97,7 +97,7 @@ public class Uninstaller {
         new AppUninstallerRooted().uninstall(app);
     }
 
-    private void askUninstall(App app) {
+    private void askRootUninstall(App app) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setTitle(app.getDisplayName())
                 .setMessage(context.getString(R.string.dialog_uninstall_confirmation))

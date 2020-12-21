@@ -16,6 +16,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.aurora.store.Constants;
 import com.aurora.store.R;
+import com.aurora.store.installer.Installer;
 import com.aurora.store.ui.preference.SettingsActivity;
 import com.aurora.store.util.ContextUtil;
 import com.aurora.store.util.PackageUtil;
@@ -39,9 +40,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class InstallationFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final String ROOT = "1";
-    private static final String SERVICES = "2";
 
     private Context context;
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -68,7 +66,7 @@ public class InstallationFragment extends PreferenceFragmentCompat implements Sh
         assert listInstallMethod != null;
         listInstallMethod.setOnPreferenceChangeListener((preference, newValue) -> {
             String installMethod = (String) newValue;
-            if (installMethod.equals(ROOT)) {
+            if (installMethod.equals(Installer.ROOT)) {
                 RootBeer rootBeer = new RootBeer(context);
                 if (rootBeer.isRooted()) {
                     Root.requestRoot();
@@ -79,7 +77,7 @@ public class InstallationFragment extends PreferenceFragmentCompat implements Sh
                     showDialog(R.string.action_installations, R.string.pref_install_mode_no_root);
                     return false;
                 }
-            } else if (installMethod.equals(SERVICES)) {
+            } else if (installMethod.equals(Installer.SERVICES)) {
                 if (PrefUtil.getBoolean(context, Constants.PREFERENCE_DOWNLOAD_INTERNAL)) {
                     showDialog(R.string.pref_app_download, R.string.pref_install_mode_internal_warn);
                     return false;
