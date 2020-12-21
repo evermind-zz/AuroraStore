@@ -50,6 +50,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+
 public class PermissionGroup extends LinearLayout {
 
     static private final String[] permissionPrefixes = new String[]{
@@ -135,14 +138,14 @@ public class PermissionGroup extends LinearLayout {
         Drawable drawable;
         try {
             drawable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
-                    ? getContext().getResources().getDrawable(permissionGroupInfo.icon, getContext().getTheme())
-                    : getContext().getResources().getDrawable(permissionGroupInfo.icon);
+                    ? ResourcesCompat.getDrawable(getContext().getResources(), permissionGroupInfo.icon, getContext().getTheme())
+                    : ResourcesCompat.getDrawable(getContext().getResources(), permissionGroupInfo.icon, null);
         } catch (Resources.NotFoundException e) {
             drawable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1
                     ? permissionGroupInfo.loadUnbadgedIcon(pm)
                     : permissionGroupInfo.loadIcon(pm);
         }
-        drawable.setTint(Util.getColorAttribute(getContext(), R.attr.colorAccent));
+        DrawableCompat.wrap(drawable).setTint(Util.getColorAttribute(getContext(), R.attr.colorAccent));
         return drawable;
     }
 
