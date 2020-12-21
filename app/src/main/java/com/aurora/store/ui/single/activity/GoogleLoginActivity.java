@@ -76,9 +76,14 @@ public class GoogleLoginActivity extends BaseActivity {
         if (!StringUtils.isEmpty(webview.getUrl()))
             return;
 
-        cookieManager.removeAllCookies(null);
-        cookieManager.acceptThirdPartyCookies(webview);
-        cookieManager.setAcceptThirdPartyCookies(webview, true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.removeAllCookies(null);
+            cookieManager.acceptThirdPartyCookies(webview);
+            cookieManager.setAcceptThirdPartyCookies(webview, true);
+        } else {
+            cookieManager.removeAllCookie();
+            cookieManager.setAcceptCookie(true);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             webview.getSettings().setSafeBrowsingEnabled(false);
