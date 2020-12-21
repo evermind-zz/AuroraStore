@@ -86,18 +86,27 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
             processApp(app);
     }
 
+    public void install(String packageName, int versionCode) {
+        // just wrap a new App instance for installing purpose only
+        App app = new App();
+        app.setPackageName(packageName);
+        app.setVersionCode(versionCode);
+        install(app);
+    }
+
     private void processApp(App app) {
         final String packageName = app.getPackageName();
         final int versionCode = app.getVersionCode();
         isInstalling = true;
         installationQueue.remove(app);
-        if (Util.isNativeInstallerEnforced(context))
-            install(packageName, versionCode);
+        if (Util.isNativeInstallerEnforced(context)
+                || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) &! Util.isPrivilegedInstall(context) ))
+            installNativeEnforced(packageName, versionCode);
         else
             installSplit(packageName, versionCode);
     }
 
-    public void install(String packageName, int versionCode) {
+    private void installNativeEnforced(String packageName, int versionCode) {
         Log.i("Native Installer Called");
         Intent intent;
         File file = new File(PathUtil.getLocalApkPath(context, packageName, versionCode));
@@ -113,7 +122,7 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
         context.startActivity(intent);
     }
 
-    public void installSplit(String packageName, int versionCode) {
+    private void installSplit(String packageName, int versionCode) {
         Log.i("Split Installer Called");
         List<File> apkFiles = new ArrayList<>();
         File apkDirectory = new File(PathUtil.getRootApkPath(context));

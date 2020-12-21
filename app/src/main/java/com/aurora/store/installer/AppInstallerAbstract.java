@@ -73,4 +73,8 @@ public abstract class AppInstallerAbstract {
     public interface InstallationStatusListener {
         void onStatusChanged(int status, @Nullable String packageName);
     }
+
+    protected Context getContext() {
+        return context;
+    }
 }

@@ -23,6 +23,7 @@
 
 package com.aurora.store.installer;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -57,6 +58,7 @@ public class AppInstaller extends AppInstallerAbstract {
         return instance;
     }
 
+    @SuppressLint("NewApi")
     @Override
     protected void installApkFiles(String packageName, List<File> apkFiles) {
         final PackageInstaller packageInstaller = getContext().getPackageManager().getPackageInstaller();
