@@ -26,6 +26,7 @@ package com.aurora.store.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.aurora.store.model.App;
 
@@ -66,7 +67,7 @@ public class ApkCopier {
         }
 
         PackageInfo packageInfo = context.getPackageManager().getPackageInfo(app.getPackageName(), 0);
-        String[] splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs;
+        String[] splitSourceDirs = getSplitSourceDirs(packageInfo);
 
         File baseApk = getBaseApk(packageInfo);
         if (baseApk == null)
@@ -99,7 +100,7 @@ public class ApkCopier {
 
     private List<File> getInstalledSplitApks(PackageInfo packageInfo) {
         List<File> fileList = new ArrayList<>();
-        String[] splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs;
+        String[] splitSourceDirs = getSplitSourceDirs(packageInfo);
         if (splitSourceDirs != null) {
             for (String fileName : splitSourceDirs)
                 fileList.add(new File(fileName));
@@ -122,5 +123,13 @@ public class ApkCopier {
         } catch (Exception e) {
             Log.e("ApkCopier : %s", e.getMessage());
         }
+    }
+
+    private String[] getSplitSourceDirs(PackageInfo packageInfo) {
+        String[] splitSourceDirs = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs;
+        }
+        return splitSourceDirs;
     }
 }
