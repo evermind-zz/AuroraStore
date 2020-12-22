@@ -20,6 +20,7 @@
 
 package com.aurora.store.ui.details.views;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -286,6 +287,7 @@ public class ActionButton extends AbstractDetails {
         };
     }
 
+    @SuppressLint("NewApi")
     private Intent getLaunchIntent() {
         Intent mIntent = context.getPackageManager().getLaunchIntentForPackage(app.getPackageName());
         boolean isTv = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && isTv();
