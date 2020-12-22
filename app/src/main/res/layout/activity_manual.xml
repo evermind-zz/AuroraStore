@@ -48,9 +48,7 @@
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginTop="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_small"
-                android:hint="@string/details_more_version"
-                app:boxStrokeColor="?android:colorAccent"
-                app:hintTextColor="?android:colorAccent">
+                android:hint="@string/details_more_version" >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text"
