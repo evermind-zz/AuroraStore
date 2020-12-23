@@ -74,13 +74,6 @@ public class Root {
             mWriter.flush();
 
             char[] buffer = new char[256];
-
-            if (!mReader.ready())
-            {
-                Log.w(TAG, "Unable to read command as input is not ready");
-                return null;
-            }
-
             while (true) {
                 sb.append(buffer, 0, mReader.read(buffer));
 
