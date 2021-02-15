@@ -203,22 +203,19 @@ public class UpdatesFragment extends BaseFragment {
             }
         }
 
-        if (adapterPosition >= 0 && itemAdapter != null) {
-            itemAdapter.remove(adapterPosition);
-            updateItemList(packageName);
-        }
+        removeItemByAdapterPosition(adapterPosition);
     }
 
     private void removeItemByAdapterPosition(int adapterPosition) {
         if (adapterPosition >= 0 && itemAdapter != null) {
             UpdatesItem updatesItem = itemAdapter.getAdapterItem(adapterPosition);
-            updateItemList(updatesItem.getPackageName());
+            updateItemList(updatesItem);
             itemAdapter.remove(adapterPosition);
         }
     }
 
-    private void updateItemList(String packageName) {
-        AuroraApplication.removeFromOngoingUpdateList(packageName);
+    private void updateItemList(UpdatesItem updatesItem) {
+        AuroraApplication.removeFromOngoingUpdateList(updatesItem.getPackageName());
         updatePageData();
     }
 
