@@ -98,7 +98,6 @@ public class AuroraActivity extends BaseActivity {
     RelativeLayout searchBar;
 
     private CompositeDisposable disposable = new CompositeDisposable();
-    private int fragmentCur = 0;
 
     static boolean matchDestination(@NonNull NavDestination destination, @IdRes int destId) {
         NavDestination currentDestination = destination;
@@ -113,7 +112,6 @@ public class AuroraActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        fragmentCur = Util.getDefaultTab(this);
 
         onNewIntent(getIntent());
 
@@ -141,6 +139,7 @@ public class AuroraActivity extends BaseActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Bundle bundle = intent.getExtras();
+        int fragmentCur;
         if (bundle != null)
             fragmentCur = bundle.getInt(Constants.INTENT_FRAGMENT_POSITION);
         else if (intent.getScheme() != null && intent.getScheme().equals("market")) {
@@ -149,6 +148,33 @@ public class AuroraActivity extends BaseActivity {
                 externalQuery = intent.getData().getQueryParameter("q");
         } else
             fragmentCur = Util.getDefaultTab(this);
+
+        setDefaultFragment(fragmentCur);
+    }
+
+    private void setDefaultFragment(int fragmentNo)
+    {
+        try {
+            int fragmentResId = mapFragmentNoToFragmentResId(fragmentNo);
+            bottomNavigationView.setSelectedItemId(fragmentResId);
+
+        } catch (RuntimeException e){
+
+        }
+    }
+
+    private int mapFragmentNoToFragmentResId(int fragmentNo)
+    {
+        switch (fragmentNo) {
+            case 0:
+                return R.id.homeFragment;
+            case 1:
+                return R.id.updatesFragment;
+            case 2:
+                return R.id.categoriesFragment;
+            default:
+        }
+        throw new RuntimeException(fragmentNo + " is invalid");
     }
 
     @Override
@@ -199,6 +225,13 @@ public class AuroraActivity extends BaseActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_main);
 
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+
+        //Check default tab to open, if configured
+        int fragmentCur = Util.getDefaultTab(this);
+        setDefaultFragment(fragmentCur);
+
+        /*
         //Avoid Adding same fragment to NavController, if clicked on current BottomNavigation item
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (item.getItemId() == bottomNavigationView.getSelectedItemId())
@@ -207,30 +240,7 @@ public class AuroraActivity extends BaseActivity {
             return true;
         });
 
-        //Check correct BottomNavigation item, if navigation_main is done programmatically
-        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            final Menu menu = bottomNavigationView.getMenu();
-            final int size = menu.size();
-            for (int i = 0; i < size; i++) {
-                MenuItem item = menu.getItem(i);
-                if (matchDestination(destination, item.getItemId())) {
-                    item.setChecked(true);
-                }
-            }
-        });
-
-        //Check default tab to open, if configured
-        switch (fragmentCur) {
-            case 0:
-                navController.navigate(R.id.homeFragment);
-                break;
-            case 1:
-                navController.navigate(R.id.updatesFragment);
-                break;
-            case 2:
-                navController.navigate(R.id.categoriesFragment);
-                break;
-        }
+         */
     }
 
     private void setupDrawer() {
