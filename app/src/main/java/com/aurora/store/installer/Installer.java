@@ -35,6 +35,13 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 import com.aurora.store.AuroraApplication;
 import com.aurora.store.Constants;
@@ -64,16 +71,139 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
     public static final String SERVICES = "2"; // the same value have to be here: R.string.INSTALLER_SERVICES
     private Context context;
     private Map<String, App> appHashMap = new HashMap<>();
+    private Map<String, App> NEWappHashMap = new HashMap<>();
     private AppInstallerAbstract packageInstaller;
     private List<App> installationQueue = new ArrayList<>();
 
     private boolean isInstalling = false;
     private boolean isWaiting = false;
+    Subject<App> NEWpublisher;
+    // evermind: at the moment clear up compositeDisposable is not needed as this class is singleton
+    CompositeDisposable NEWcompositeDisposable = new CompositeDisposable();
 
     public Installer(Context context) {
         this.context = context;
         packageInstaller = getInstallationMethod(context.getApplicationContext());
+        NEWinit();
     }
+
+    /**
+     * provide a enqueue service for packages that should be installed using RxJava.
+     * For time being all those methods will start mit NEW
+     */
+    private void NEWinit() {
+        NEWinitPublisher();
+        NEWsubscribeToPublisher(NEWobserveEnqueuedApp());
+    }
+
+    private void NEWinitPublisher() {
+        NEWpublisher = PublishSubject.<App>create().toSerialized();
+    }
+
+    private void NEWsubscribeToPublisher(Observer<App> observer) {
+
+        NEWpublisher
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribe(observer);
+    }
+
+    private Observer<App> NEWobserveEnqueuedApp() {
+        return new Observer<App>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                NEWcompositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(@NonNull App app) {
+                Log.d("InstallObserver:" + app.getPackageName()
+                        + " threadName:" + Thread.currentThread().getName()
+                        + " Installer.this " + Installer.this
+                        + " Observer.this "  + this
+                );
+                NEWinstall(app);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) { }
+
+            @Override
+            public void onComplete() { }
+        };
+    }
+
+    public void NEWenqueueApp(App app) {
+        NEWpublisher.onNext(app);
+    }
+
+    private void NEWinstall(App app) {
+        final String packageName = app.getPackageName();
+        final int versionCode = app.getVersionCode();
+        NEWappHashMap.put(app.getPackageName(), app);
+
+        if (Util.isNativeInstallerEnforced(context)
+                || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) & !Util.isPrivilegedInstall(context)))
+            installNativeEnforced(packageName, versionCode);
+        else
+            NEWinstallSplit(packageName, versionCode);
+    }
+
+    private void NEWinstallSplit(String packageName, int versionCode) {
+        Log.i("Split Installer Called");
+        List<File> apkFiles = new ArrayList<>();
+        File apkDirectory = new File(PathUtil.getRootApkPath(context));
+        for (File splitApk : apkDirectory.listFiles()) {
+            if (splitApk.getPath().contains(new StringBuilder()
+                    .append(packageName)
+                    .append(".")
+                    .append(versionCode))) {
+                apkFiles.add(splitApk);
+            }
+        }
+
+        packageInstaller.addInstallationStatusListener(NEWstatusListener);
+        packageInstaller.installApkFiles(packageName, apkFiles);
+    }
+
+    AppInstallerAbstract.InstallationStatusListener NEWstatusListener = new NEWStatuslistener();
+
+    private class NEWStatuslistener implements AppInstallerAbstract.InstallationStatusListener
+    {
+        @Override
+        public void onStatusChanged(int status, @Nullable String intentPackageName) {
+            final String statusMessage = getStatusString(status);
+            final App app = NEWappHashMap.get(intentPackageName);
+
+            String displayName = (app != null)
+                    ? TextUtil.emptyIfNull(app.getDisplayName())
+                    : TextUtil.emptyIfNull(intentPackageName);
+
+            if (StringUtils.isEmpty(displayName))
+                displayName = context.getString(R.string.app_name);
+
+            Log.i("Package Installer -> %s : %s", displayName, TextUtil.emptyIfNull(statusMessage));
+
+            clearNotification(app);
+
+            if (status == PackageInstaller.STATUS_SUCCESS) {
+                sendStatusBroadcast(intentPackageName, Event.StatusType.SUCCESS.ordinal());
+                if (app != null && Util.shouldDeleteApk(context)) {
+                    clearInstallationFiles(app);
+                }
+            } else {
+                sendStatusBroadcast(intentPackageName, Event.StatusType.FAILURE.ordinal());
+            }
+
+            QuickNotification.show(
+                    context,
+                    displayName,
+                    statusMessage,
+                    getContentIntent(intentPackageName));
+
+            NEWappHashMap.remove(intentPackageName);
+        }
+    };
 
     public AppInstallerAbstract getPackageInstaller() {
         return packageInstaller;
