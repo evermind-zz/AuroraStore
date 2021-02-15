@@ -42,7 +42,6 @@ import androidx.work.OneTimeWorkRequest;
 import com.aurora.store.AuroraApplication;
 import com.aurora.store.Constants;
 import com.aurora.store.R;
-import com.aurora.store.download.DownloadManager;
 import com.aurora.store.manager.IgnoreListManager;
 import com.aurora.store.model.App;
 import com.aurora.store.model.items.UpdatesItem;
@@ -50,7 +49,7 @@ import com.aurora.store.sheet.AppMenuSheet;
 import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.ui.single.fragment.BaseFragment;
 import com.aurora.store.ui.view.ViewFlipper2;
-import com.aurora.store.util.Util;
+import com.aurora.store.util.Log;
 import com.aurora.store.util.ViewUtil;
 import com.aurora.store.util.WorkerUtil;
 import com.aurora.store.util.diff.UpdatesDiffCallback;
@@ -60,25 +59,17 @@ import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil;
 import com.mikepenz.fastadapter.select.SelectExtension;
-import com.tonyodev.fetch2.AbstractFetchGroupListener;
-import com.tonyodev.fetch2.Download;
-import com.tonyodev.fetch2.Fetch;
-import com.tonyodev.fetch2.FetchGroup;
-import com.tonyodev.fetch2.FetchListener;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 
 public class UpdatesFragment extends BaseFragment {
@@ -94,9 +85,6 @@ public class UpdatesFragment extends BaseFragment {
     AppCompatTextView txtUpdateAll;
     @BindView(R.id.btn_action)
     MaterialButton btnAction;
-
-    private Fetch fetch;
-    private Set<UpdatesItem> selectedItems = new HashSet<>();
 
     private UpdatableAppsModel model;
     private FastAdapter<UpdatesItem> fastAdapter;
@@ -116,7 +104,6 @@ public class UpdatesFragment extends BaseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetch = DownloadManager.getFetchInstance(requireContext());
         setupRecycler();
 
         model = new ViewModelProvider(this).get(UpdatableAppsModel.class);
@@ -139,6 +126,8 @@ public class UpdatesFragment extends BaseFragment {
                     break;
             }
         });
+
+        initObserveBulkUpdate();
 
         swipeLayout.setRefreshing(true);
         swipeLayout.setOnRefreshListener(() -> model.fetchUpdatableApps(true));
@@ -172,7 +161,8 @@ public class UpdatesFragment extends BaseFragment {
 
                     //Handle misc events
                     switch (event.getSubType()) {
-                        case BULK_UPDATE_NOTIFY:
+                        case BULK_UPDATE_STARTED:
+                        case BULK_UPDATE_STOPPED:
                             updatePageData();
                             break;
                         case WHITELIST:
@@ -238,9 +228,7 @@ public class UpdatesFragment extends BaseFragment {
     }
 
     private void updatePageData() {
-        updateText();
         updateButtons();
-        updateButtonActions();
 
         if (itemAdapter != null && itemAdapter.getAdapterItems().size() > 0) {
             viewFlipper.switchState(ViewFlipper2.DATA);
@@ -287,12 +275,9 @@ public class UpdatesFragment extends BaseFragment {
         fastAdapter.addEventHook(new UpdatesItem.CheckBoxClickEvent());
 
         selectExtension.setMultiSelect(true);
+
         selectExtension.setSelectionListener((item, selected) -> {
-            if (selected) {
-                selectedItems.add(item);
-            } else {
-                selectedItems.remove(item);
-            }
+            updateText();
             updatePageData();
         });
 
@@ -324,71 +309,42 @@ public class UpdatesFragment extends BaseFragment {
         }
     }
 
-    private void attachFetchCancelListener() {
+    private void cancelDownloads() {
         boolean selectiveUpdate = selectExtension.getSelectedItems().size() > 0;
-        Observable.fromIterable(selectiveUpdate
-                ? selectedItems
+        Disposable d = Observable.fromIterable(selectiveUpdate
+                ? selectExtension.getSelectedItems()
                 : itemAdapter.getAdapterItems())
-                .map(updatesItem -> updatesItem.getPackageName().hashCode())
-                .doOnNext(hashcode -> {
-                    final FetchListener fetchListener = new AbstractFetchGroupListener() {
-                        @Override
-                        public void onAdded(int groupId, @NotNull Download download, @NotNull FetchGroup fetchGroup) {
-                            super.onAdded(groupId, download, fetchGroup);
-                            if (hashcode == groupId) {
-                                fetch.cancelGroup(groupId);
-                                fetch.deleteGroup(groupId);
-                                fetch.removeListener(this);
-                            }
-                        }
-
-                        @Override
-                        public void onProgress(int groupId, @NotNull Download download, long etaInMilliSeconds, long downloadedBytesPerSecond, @NotNull FetchGroup fetchGroup) {
-                            super.onProgress(groupId, download, etaInMilliSeconds, downloadedBytesPerSecond, fetchGroup);
-                            if (hashcode == groupId) {
-                                fetch.cancelGroup(groupId);
-                                fetch.deleteGroup(groupId);
-                                fetch.removeListener(this);
-                            }
-                        }
-
-                        @Override
-                        public void onQueued(int groupId, @NotNull Download download, boolean waitingNetwork, @NotNull FetchGroup fetchGroup) {
-                            super.onQueued(groupId, download, waitingNetwork, fetchGroup);
-                            if (hashcode == groupId) {
-                                fetch.cancelGroup(groupId);
-                                fetch.deleteGroup(groupId);
-                                fetch.removeListener(this);
-                            }
-                        }
-                    };
-                    fetch.addListener(fetchListener);
-                })
-                .doOnComplete(() -> {
-                    //Clear ongoing update list
-                    AuroraApplication.setOngoingUpdateList(new ArrayList<>());
-                    //Start BulkUpdate cancellation request
-                    Util.stopBulkUpdateService(requireContext());
-                })
-                .subscribe();
+                .map(updatesItem -> updatesItem.getApp())
+                .toList()
+                .subscribe(model::cancelUpdate, throwable -> Log.e(throwable.getMessage()));
+        disposable.add(d);
     }
 
-    private void updateButtonActions() {
+    private void cancelUpdate(List<App> cancelApps) {
+        model.cancelUpdate(cancelApps);
+    }
+
+    private void initObserveBulkUpdate() {
+        model.isUpdateOngoing().observe(getViewLifecycleOwner(), isUpdateOngoing -> updateOngoing(isUpdateOngoing));
+    }
+
+    private void updateOngoing(Boolean isUpdateOngoing) {
         btnAction.setOnClickListener(null);
         btnAction.setEnabled(true);
-        if (AuroraApplication.isBulkUpdateAlive()) {
+        if (isUpdateOngoing) {
             btnAction.setText(getString(R.string.action_cancel));
             btnAction.setOnClickListener(v -> {
-                attachFetchCancelListener();
+                cancelDownloads();
                 btnAction.setEnabled(false);
             });
         } else {
-            boolean selectiveUpdate = selectExtension.getSelectedItems().size() > 0;
+            updateText();
             btnAction.setOnClickListener(v -> {
+                boolean selectiveUpdate = selectExtension.getSelectedItems().size() > 0;
                 btnAction.setEnabled(false);
                 IgnoreListManager ignoreListManager = new IgnoreListManager(requireContext());
-                Observable.fromIterable(selectiveUpdate
-                        ? selectedItems
+                Disposable comp = Observable.fromIterable(selectiveUpdate
+                        ? selectExtension.getSelectedItems()
                         : itemAdapter.getAdapterItems())
                         .filter(updatesItem -> {
                             final App app = updatesItem.getApp();
@@ -397,10 +353,10 @@ public class UpdatesFragment extends BaseFragment {
                         .map(UpdatesItem::getApp)
                         .toList()
                         .doOnSuccess(apps -> {
-                            AuroraApplication.setOngoingUpdateList(apps);
-                            Util.startBulkUpdateService(requireContext());
+                            model.updateApps(apps);
                         })
                         .subscribe();
+                disposable.add(comp);
             });
         }
     }

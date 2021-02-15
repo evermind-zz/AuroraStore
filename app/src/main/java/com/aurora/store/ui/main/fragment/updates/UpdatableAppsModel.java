@@ -7,8 +7,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.aurora.store.AuroraApplication;
+import com.aurora.store.model.App;
 import com.aurora.store.model.items.UpdatesItem;
 import com.aurora.store.repository.UpdateRepository;
+import com.aurora.store.service.updater.UpdateService;
+import com.aurora.store.service.updater.AccessUpdateService;
 import com.aurora.store.viewmodel.BaseViewModel;
 
 import java.util.List;
@@ -20,15 +23,21 @@ import io.reactivex.schedulers.Schedulers;
 public class UpdatableAppsModel extends BaseViewModel {
 
     private MutableLiveData<List<UpdatesItem>> data = new MutableLiveData<>();
+    private MutableLiveData<Boolean> updateOngoing = new MutableLiveData<>();
 
     public UpdatableAppsModel(@NonNull Application application) {
         super(application);
         this.api = AuroraApplication.api;
         fetchUpdatableApps();
+        updateOngoing.setValue(false);
     }
 
     public LiveData<List<UpdatesItem>> getData() {
         return data;
+    }
+
+    public LiveData<Boolean> isUpdateOngoing() {
+        return UpdateService.isUpdateOngoing();
     }
 
     public void fetchUpdatableApps() {
@@ -46,6 +55,14 @@ public class UpdatableAppsModel extends BaseViewModel {
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(updatesItems -> data.setValue(updatesItems), this::handleError));
+    }
+
+    public void updateApps(List<App> apps) {
+        AccessUpdateService.downloadAndInstall(getApplication().getApplicationContext(), apps);
+    }
+
+    public void cancelUpdate(List<App> cancelApps) {
+        AccessUpdateService.cancelUpdate(getApplication().getApplicationContext(),cancelApps);
     }
 
     @Override
