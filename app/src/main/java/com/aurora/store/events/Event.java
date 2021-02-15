@@ -43,7 +43,6 @@ public class Event {
         UNINSTALLED,
         NETWORK_UNAVAILABLE,
         NETWORK_AVAILABLE,
-        BULK_UPDATE_NOTIFY
         BULK_UPDATE_STARTED,
         BULK_UPDATE_STOPPED,
         DOWNLOAD

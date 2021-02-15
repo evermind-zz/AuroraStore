@@ -42,7 +42,6 @@ import com.aurora.store.Constants;
 import com.aurora.store.R;
 import com.aurora.store.installer.Installer;
 import com.aurora.store.receiver.UpdatesReceiver;
-import com.aurora.store.service.BulkUpdateService;
 import com.aurora.store.service.NotificationService;
 import com.aurora.store.ui.main.AuroraActivity;
 import com.aurora.store.ui.single.activity.SplashActivity;
@@ -558,24 +557,6 @@ public class Util {
             Log.d(e.getMessage());
         }
         return cookieList;
-    }
-
-    public static void startBulkUpdateService(Context context) {
-        try {
-            if (!BulkUpdateService.isServiceRunning())
-                context.startService(new Intent(context, BulkUpdateService.class));
-        } catch (IllegalStateException e) {
-            Log.e(e.getMessage());
-        }
-    }
-
-    public static void stopBulkUpdateService(Context context) {
-        try {
-            if (BulkUpdateService.isServiceRunning())
-                context.stopService(new Intent(context, BulkUpdateService.class));
-        } catch (IllegalStateException e) {
-            Log.e(e.getMessage());
-        }
     }
 
     public static void startNotificationService(Context context) {

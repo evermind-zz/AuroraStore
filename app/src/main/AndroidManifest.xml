@@ -199,7 +199,6 @@
 
         <service android:name=".installer.InstallerService" />
         <service android:name=".service.SelfUpdateService" />
-        <service android:name=".service.BulkUpdateService" />
         <service android:name=".service.NotificationService" />
         <service android:name=".service.updater.UpdateService" />
     </application>
