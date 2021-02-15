@@ -94,7 +94,7 @@ public class ObservableDeliveryData extends BaseTask {
                 && app.getInstalledVersionCode() < app.getVersionCode();
     }
 
-    public class DeliveryDataBundle {
+    public static class DeliveryDataBundle {
         private App app;
         private AndroidAppDeliveryData androidAppDeliveryData;
 

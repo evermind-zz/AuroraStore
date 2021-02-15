@@ -195,10 +195,12 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".service.updater.misc.DownloaderReceiver" />
 
         <service android:name=".installer.InstallerService" />
         <service android:name=".service.SelfUpdateService" />
         <service android:name=".service.BulkUpdateService" />
         <service android:name=".service.NotificationService" />
+        <service android:name=".service.updater.UpdateService" />
     </application>
 </manifest>

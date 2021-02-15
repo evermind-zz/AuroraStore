@@ -142,6 +142,9 @@ dependencies {
     implementation "com.jakewharton:butterknife:10.2.1"
     annotationProcessor "com.jakewharton:butterknife-compiler:10.2.1"
 
+    // connect to service using RxJava
+    implementation 'com.github.IVIanuu:RxServiceConnection:1.0.5'
+
     //Glide
     implementation "com.github.bumptech.glide:glide:${versions.glide}"
     implementation "com.github.bumptech.glide:okhttp3-integration:${versions.glide}"
