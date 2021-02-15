@@ -161,6 +161,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'com.github.pwittchen:reactivenetwork-rx2:3.0.8'
+    implementation "com.github.akarnokd:rxjava3-interop:3.0.2" // rx.functions.Func{0,2} etc
 }
 
 repositories {

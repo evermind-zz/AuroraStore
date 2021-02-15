@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.aurora.store.AuroraApplication;
 import com.aurora.store.model.items.UpdatesItem;
-import com.aurora.store.task.UpdatableAppsTask;
+import com.aurora.store.repository.UpdateRepository;
 import com.aurora.store.viewmodel.BaseViewModel;
 
 import java.util.List;
@@ -32,15 +32,19 @@ public class UpdatableAppsModel extends BaseViewModel {
     }
 
     public void fetchUpdatableApps() {
-        disposable.add(Observable.fromCallable(() -> new UpdatableAppsTask(api, getApplication())
-                .getUpdatableApps())
+        fetchUpdatableApps(false);
+    }
+
+    public void fetchUpdatableApps(boolean doRefresh) {
+
+        disposable.add(UpdateRepository.getInstance().fetchUpdatableApps(getApplication(),doRefresh)
                 .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(this::sortList)
                 .flatMap(apps -> Observable
                         .fromIterable(apps)
                         .map(UpdatesItem::new))
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(updatesItems -> data.setValue(updatesItems), this::handleError));
     }
 

@@ -141,7 +141,7 @@ public class UpdatesFragment extends BaseFragment {
         });
 
         swipeLayout.setRefreshing(true);
-        swipeLayout.setOnRefreshListener(() -> model.fetchUpdatableApps());
+        swipeLayout.setOnRefreshListener(() -> model.fetchUpdatableApps(true));
 
         disposable.add(AuroraApplication
                 .getRelayBus()
