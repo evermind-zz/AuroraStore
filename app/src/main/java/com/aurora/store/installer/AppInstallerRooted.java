@@ -85,6 +85,9 @@ public class AppInstallerRooted extends AppInstallerAbstract {
             boolean found = sessionIdMatcher.find();
             int sessionId = Integer.parseInt(sessionIdMatcher.group(1));
 
+            // evermind: try to find a rare twice install the same package case.
+            // https://stackoverflow.com/questions/7841232/java-android-how-to-print-out-a-full-stack-trace#7841448
+            android.util.Log.d("TestExcAuroraROOTInst1", android.util.Log.getStackTraceString(new Exception()));
             for (File apkFile : apkFiles)
                 ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
                         "cat \"%s\" | pm install-write -S %d %d \"%s\"",
@@ -103,7 +106,19 @@ public class AppInstallerRooted extends AppInstallerAbstract {
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
         } catch (Exception e) {
             Log.w(e.getMessage());
-            dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
+            // evermind: try to find a rare twice install the same package case.
+            android.util.Log.d("TestExcAuroraROOTInst2", android.util.Log.getStackTraceString(e.getCause().getCause()));
+            // java.lang.RuntimeException: Failure [INSTALL_FAILED_CONTAINER_ERROR: Failed to extract native libraries, res=-18]
+            if (e.getMessage().contains("INSTALL_FAILED_CONTAINER_ERROR")
+                // java.lang.RuntimeException: Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]
+                || e.getMessage().contains("INSTALL_FAILED_INSUFFICIENT_STORAGE")
+                // java.lang.RuntimeException: Error: java.lang.IllegalStateException: ☃Requested internal only, but not enough space
+                || e.getMessage().contains("Requested internal only, but not enough space"))
+            {
+                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_STORAGE, packageName);
+            } else {
+                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
+            }
         }
     }
 

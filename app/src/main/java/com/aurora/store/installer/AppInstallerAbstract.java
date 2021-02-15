@@ -61,6 +61,7 @@ public abstract class AppInstallerAbstract {
         this.listener = listener;
     }
 
+    // evermind: this method should only called once during installation
     void dispatchSessionUpdate(int status, String packageName) {
         handler.post(() -> {
             if (listener != null)
