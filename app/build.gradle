@@ -64,6 +64,10 @@ android {
             applicationIdSuffix = ".beta"
             resValue "string", "app_name", "Aurora Store legacy - Beta"
         }
+        developertest {
+            initWith debug
+            applicationIdSuffix = ".testing"
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
