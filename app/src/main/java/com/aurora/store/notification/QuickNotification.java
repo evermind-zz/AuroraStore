@@ -32,6 +32,9 @@ import com.aurora.store.Constants;
 import com.aurora.store.R;
 import com.aurora.store.util.NotificationUtil;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class QuickNotification {
 
     private static final int QUICK_NOTIFICATION_CHANNEL_ID = 69;
@@ -59,6 +62,7 @@ public class QuickNotification {
                     .setContentTitle(contentTitle)
                     .setContentText(contentText)
                     .setOnlyAlertOnce(true)
+                    .setWhen(new Timestamp(new Date().getTime()).getTime())
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setSmallIcon(R.drawable.ic_notification_outlined);
 
