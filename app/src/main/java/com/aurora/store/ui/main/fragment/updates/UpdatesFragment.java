@@ -108,7 +108,7 @@ public class UpdatesFragment extends BaseFragment {
 
         model = new ViewModelProvider(this).get(UpdatableAppsModel.class);
 
-        model.getData().observe(getViewLifecycleOwner(), updatesItems -> {
+        model.getUpdatesList().observe(getViewLifecycleOwner(), updatesItems -> {
             dispatchAppsToAdapter(updatesItems);
             swipeLayout.setRefreshing(false);
         });
@@ -130,7 +130,7 @@ public class UpdatesFragment extends BaseFragment {
         initObserveBulkUpdate();
 
         swipeLayout.setRefreshing(true);
-        swipeLayout.setOnRefreshListener(() -> model.fetchUpdatableApps(true));
+        swipeLayout.setOnRefreshListener(() -> model.fetchUpdatesList(true));
 
         disposable.add(AuroraApplication
                 .getRelayBus()
@@ -142,10 +142,6 @@ public class UpdatesFragment extends BaseFragment {
                             int adapterPosition = event.getIntExtra();
                             removeItemByAdapterPosition(adapterPosition);
                             break;
-                        case INSTALLED:
-                        case UNINSTALLED:
-                            removeItemByPackageName(event.getStringExtra());
-                            break;
                     }
 
                     //Handle Network & API events
@@ -153,7 +149,7 @@ public class UpdatesFragment extends BaseFragment {
                         case API_SUCCESS:
                         case NETWORK_AVAILABLE:
                             if (awaiting) {
-                                model.fetchUpdatableApps();
+                                model.fetchUpdatesList();
                                 awaiting = false;
                             }
                             break;
@@ -218,10 +214,6 @@ public class UpdatesFragment extends BaseFragment {
             switch (workInfo.getState()) {
                 case FAILED:
                     showSnackBar(coordinator, R.string.toast_api_build_failed, null);
-                    break;
-
-                case SUCCEEDED:
-                    model.getData();
                     break;
             }
         });

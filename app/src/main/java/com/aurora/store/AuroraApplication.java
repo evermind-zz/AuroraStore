@@ -34,6 +34,7 @@ import com.aurora.store.installer.InstallerService;
 import com.aurora.store.model.App;
 import com.aurora.store.report.AcraLogSenderFactory;
 import com.aurora.store.report.AcraReportSenderFactory;
+import com.aurora.store.repository.UpdateRepository;
 import com.aurora.store.util.Log;
 import com.aurora.store.util.Util;
 import com.dragons.aurora.playstoreapiv2.GooglePlayAPI;
@@ -177,6 +178,9 @@ public class AuroraApplication extends MultiDexApplication {
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this);
         }
+
+        // init the UpdateRepo instance
+        UpdateRepository.getInstance();
     }
 
     @Override

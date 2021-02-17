@@ -17,22 +17,27 @@ import com.aurora.store.viewmodel.BaseViewModel;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public class UpdatableAppsModel extends BaseViewModel {
 
     private MutableLiveData<List<UpdatesItem>> data = new MutableLiveData<>();
     private MutableLiveData<Boolean> updateOngoing = new MutableLiveData<>();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public UpdatableAppsModel(@NonNull Application application) {
         super(application);
         this.api = AuroraApplication.api;
-        fetchUpdatableApps();
+        fetchUpdatesList();
         updateOngoing.setValue(false);
+
+        initObserver();
     }
 
-    public LiveData<List<UpdatesItem>> getData() {
+    public LiveData<List<UpdatesItem>> getUpdatesList() {
         return data;
     }
 
@@ -40,21 +45,42 @@ public class UpdatableAppsModel extends BaseViewModel {
         return UpdateService.isUpdateOngoing();
     }
 
-    public void fetchUpdatableApps() {
-        fetchUpdatableApps(false);
+    public void fetchUpdatesList() {
+        fetchUpdatesList(false);
     }
 
-    public void fetchUpdatableApps(boolean doRefresh) {
+    public void fetchUpdatesList(boolean doUpdate) {
+        UpdateRepository.getInstance().fetchData(getApplication(), doUpdate);
+    }
 
-        disposable.add(UpdateRepository.getInstance().fetchUpdatableApps(getApplication(),doRefresh)
-                .subscribeOn(Schedulers.computation())
-                .map(this::sortList)
-                .flatMap(apps -> Observable
-                        .fromIterable(apps)
-                        .map(UpdatesItem::new))
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(updatesItems -> data.setValue(updatesItems), this::handleError));
+    private Observer<List<App>> createListObserver() {
+        return new Observer<List<App>>() {
+            @Override
+            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                compositeDisposable.add(d);
+            }
+
+            @Override
+            public void onNext(@io.reactivex.annotations.NonNull List<App> list) {
+                compositeDisposable.add(Observable.just(list)
+                        .map(UpdatableAppsModel.this::sortList)
+                        .flatMap(apps -> Observable
+                                .fromIterable(apps)
+                                .map(UpdatesItem::new))
+                        .toList()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(updatesItems ->
+                        {
+                            data.setValue(updatesItems);
+                        }));
+            }
+
+            @Override
+            public void onError(@io.reactivex.annotations.NonNull Throwable e) { }
+
+            @Override
+            public void onComplete() { }
+        };
     }
 
     public void updateApps(List<App> apps) {
@@ -65,6 +91,9 @@ public class UpdatableAppsModel extends BaseViewModel {
         AccessUpdateService.cancelUpdate(getApplication().getApplicationContext(),cancelApps);
     }
 
+    private void initObserver() {
+        UpdateRepository.getInstance().observeData(createListObserver());
+    }
     @Override
     protected void onCleared() {
         disposable.dispose();
