@@ -21,6 +21,11 @@ import com.aurora.store.util.Util;
 import com.aurora.store.util.ViewUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+
 public class Uninstaller {
 
     private Context context;
@@ -102,7 +107,17 @@ public class Uninstaller {
                 .setTitle(app.getDisplayName())
                 .setMessage(context.getString(R.string.dialog_uninstall_confirmation))
                 .setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
-                    uninstallByRoot(app);
+
+                    Callable rootUninstallerCallable = new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            uninstallByRoot(app);
+                            return true; // value irrelevant as it will be ignored
+                        }
+                    };
+                    Observable.fromCallable(rootUninstallerCallable)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe();
                 })
                 .setNegativeButton(context.getString(android.R.string.cancel), (dialog, which) -> {
                     dialog.dismiss();
