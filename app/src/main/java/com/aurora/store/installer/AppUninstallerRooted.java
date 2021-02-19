@@ -43,7 +43,9 @@ public class AppUninstallerRooted {
                     return;
                 }
             }
-            Log.d(ensureCommandSucceeded(root.exec("pm clear " + app.getPackageName())));
+            // redirect stderr to stdout as at least on KitKat Emulator the result 'Success'
+            // is not present on stdout
+            Log.d(ensureCommandSucceeded(root.exec("pm clear " + app.getPackageName() + " 2>&1")));
             Log.d(ensureCommandSucceeded(root.exec("pm uninstall " + app.getPackageName())));
         } catch (Exception e) {
             Log.w(e.getMessage());
