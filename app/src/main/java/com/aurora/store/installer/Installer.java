@@ -320,7 +320,10 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
         String prefValue = PrefUtil.getString(context, Constants.PREFERENCE_INSTALLATION_METHOD);
         switch (prefValue) {
             case Installer.ROOT:
-                return AppInstallerRooted.getInstance(context);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    return AppInstallerRooted.getInstance(context);
+                else
+                    return AppInstallerRootedKitkat.getInstance(context);
             case Installer.SERVICES:
                 return AppInstallerPrivileged.getInstance(context);
             default:
