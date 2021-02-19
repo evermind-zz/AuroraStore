@@ -59,46 +59,59 @@ public class AppInstallerRooted extends AppInstallerAbstract {
         return instance;
     }
 
+    private boolean doWeGetRootAccess(String packageName) {
+        boolean retvalue = true;
+        if (root.isTerminated() || !root.isAcquired()) {
+            Root.requestRoot();
+            if (!root.isAcquired()) {
+                ContextUtil.toastLong(getContext(), "Root access not available");
+                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
+                retvalue = false;
+            }
+        }
+        return retvalue;
+    }
+
+    protected String installCommands(String packageName, List<File> apkFiles) throws Exception {
+        int totalSize = 0;
+        for (File apkFile : apkFiles)
+            totalSize += apkFile.length();
+
+        final String createSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+                "pm install-create -i com.android.vending --user %s -r -S %d",
+                Util.getInstallationProfile(getContext()),
+                totalSize)));
+
+        final Pattern sessionIdPattern = Pattern.compile("(\\d+)");
+        final Matcher sessionIdMatcher = sessionIdPattern.matcher(createSessionResult);
+        boolean found = sessionIdMatcher.find();
+        int sessionId = Integer.parseInt(sessionIdMatcher.group(1));
+
+        // evermind: try to find a rare twice install the same package case.
+        // https://stackoverflow.com/questions/7841232/java-android-how-to-print-out-a-full-stack-trace#7841448
+        android.util.Log.d("TestExcAuroraROOTInst1", android.util.Log.getStackTraceString(new Exception()));
+        for (File apkFile : apkFiles)
+            ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+                    "cat \"%s\" | pm install-write -S %d %d \"%s\"",
+                    apkFile.getAbsolutePath(),
+                    apkFile.length(),
+                    sessionId,
+                    apkFile.getName())));
+
+        String commitSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+                "pm install-commit %d",
+                sessionId)));
+
+        return commitSessionResult;
+    }
+
     @Override
     protected void installApkFiles(String packageName, List<File> apkFiles) {
         try {
-            if (root.isTerminated() || !root.isAcquired()) {
-                Root.requestRoot();
-                if (!root.isAcquired()) {
-                    ContextUtil.toastLong(getContext(), "Root access not available");
-                    dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
-                    return;
-                }
-            }
+            if (!doWeGetRootAccess(packageName))
+                return;
 
-            int totalSize = 0;
-            for (File apkFile : apkFiles)
-                totalSize += apkFile.length();
-
-            final String createSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
-                    "pm install-create -i com.android.vending --user %s -r -S %d",
-                    Util.getInstallationProfile(getContext()),
-                    totalSize)));
-
-            final Pattern sessionIdPattern = Pattern.compile("(\\d+)");
-            final Matcher sessionIdMatcher = sessionIdPattern.matcher(createSessionResult);
-            boolean found = sessionIdMatcher.find();
-            int sessionId = Integer.parseInt(sessionIdMatcher.group(1));
-
-            // evermind: try to find a rare twice install the same package case.
-            // https://stackoverflow.com/questions/7841232/java-android-how-to-print-out-a-full-stack-trace#7841448
-            android.util.Log.d("TestExcAuroraROOTInst1", android.util.Log.getStackTraceString(new Exception()));
-            for (File apkFile : apkFiles)
-                ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
-                        "cat \"%s\" | pm install-write -S %d %d \"%s\"",
-                        apkFile.getAbsolutePath(),
-                        apkFile.length(),
-                        sessionId,
-                        apkFile.getName())));
-
-            final String commitSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
-                    "pm install-commit %d ",
-                    sessionId)));
+            String commitSessionResult = installCommands(packageName, apkFiles);
 
             if (commitSessionResult.toLowerCase().contains("success"))
                 dispatchSessionUpdate(PackageInstaller.STATUS_SUCCESS, packageName);
@@ -106,8 +119,15 @@ public class AppInstallerRooted extends AppInstallerAbstract {
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
         } catch (Exception e) {
             Log.w(e.getMessage());
+
             // evermind: try to find a rare twice install the same package case.
-            android.util.Log.d("TestExcAuroraROOTInst2", android.util.Log.getStackTraceString(e.getCause().getCause()));
+            if (null != e.getCause()) {
+                if (null != e.getCause().getCause()) {
+                    android.util.Log.d("TestExcAuroraROOTInst2", android.util.Log.getStackTraceString(e.getCause().getCause()));
+                } else {
+                    android.util.Log.d("TestExcAuroraROOTInst3", android.util.Log.getStackTraceString(e.getCause()));
+                }
+            }
             // java.lang.RuntimeException: Failure [INSTALL_FAILED_CONTAINER_ERROR: Failed to extract native libraries, res=-18]
             if (e.getMessage().contains("INSTALL_FAILED_CONTAINER_ERROR")
                 // java.lang.RuntimeException: Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]
