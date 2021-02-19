@@ -40,9 +40,9 @@ import java.util.regex.Pattern;
 public class AppInstallerRooted extends AppInstallerAbstract {
 
     private static volatile AppInstallerRooted instance;
-    private static Root root;
+    protected static Root root;
 
-    private AppInstallerRooted(Context context) {
+    protected AppInstallerRooted(Context context) {
         super(context);
         instance = this;
     }
@@ -122,7 +122,7 @@ public class AppInstallerRooted extends AppInstallerAbstract {
         }
     }
 
-    private String ensureCommandSucceeded(String result) {
+    protected String ensureCommandSucceeded(String result) {
         if (result == null || result.length() == 0)
             throw new RuntimeException(root.readError());
         return result;
