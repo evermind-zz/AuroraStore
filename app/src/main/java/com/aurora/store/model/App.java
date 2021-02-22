@@ -87,6 +87,7 @@ public class App {
     private int versionCode = 0;
     private long installs;
     private long size;
+    private String localFilePathUri;
 
     private transient Drawable iconDrawable;
 

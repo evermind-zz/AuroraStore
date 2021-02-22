@@ -144,22 +144,53 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
 
         if (Util.isNativeInstallerEnforced(context)
                 || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) & !Util.isPrivilegedInstall(context)))
-            installNativeEnforced(packageName, versionCode);
+            installNativeEnforced(packageName, versionCode, app.getLocalFilePathUri());
         else
-            NEWinstallSplit(packageName, versionCode);
+            NEWinstallSplit(packageName, versionCode, app.getLocalFilePathUri());
     }
 
-    private void NEWinstallSplit(String packageName, int versionCode) {
+    private void NEWinstallSplit(String packageName, int versionCode, @Nullable String localFilePath) {
+
+        File file = null;
+        File apkDirectory = null;
+        boolean isLocalFilePathValid = false;
+        boolean didWeGotOurLocalFilePathIncluded = false;
+
+        if (null != localFilePath) {
+            file = new File(localFilePath);
+            if (null != file) {
+                isLocalFilePathValid = true;
+                apkDirectory = new File(file.getParent());
+            }
+        }
+
+        if ( ! isLocalFilePathValid )
+            apkDirectory = new File(PathUtil.getRootApkPath(context));
+
         Log.i("Split Installer Called");
         List<File> apkFiles = new ArrayList<>();
-        File apkDirectory = new File(PathUtil.getRootApkPath(context));
         for (File splitApk : apkDirectory.listFiles()) {
             if (splitApk.getPath().contains(new StringBuilder()
                     .append(packageName)
                     .append(".")
                     .append(versionCode))) {
                 apkFiles.add(splitApk);
+
+                if ( isLocalFilePathValid ) {
+                    if (splitApk.getAbsolutePath().equals(localFilePath)) {
+                        didWeGotOurLocalFilePathIncluded = true;
+                    }
+                }
             }
+        }
+
+        if (isLocalFilePathValid &! didWeGotOurLocalFilePathIncluded) {
+            // we assume that because the supplied apk failed with a proper naming scheme
+            // with packageName and versionCode, that there was no split apk provided.
+            // So we just take the @localFilePath supplied apk.
+            // TODO maybe inform the user about that
+            apkFiles.clear();
+            apkFiles.add(file);
         }
 
         packageInstaller.addInstallationStatusListener(NEWstatusListener);
@@ -234,15 +265,21 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
         installationQueue.remove(app);
         if (Util.isNativeInstallerEnforced(context)
                 || ((Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) &! Util.isPrivilegedInstall(context) ))
-            installNativeEnforced(packageName, versionCode);
+            installNativeEnforced(packageName, versionCode, app.getLocalFilePathUri());
         else
             installSplit(packageName, versionCode);
     }
 
-    private void installNativeEnforced(String packageName, int versionCode) {
+    private void installNativeEnforced(String packageName, int versionCode, @Nullable String localFilePath) {
         Log.i("Native Installer Called");
         Intent intent;
-        File file = new File(PathUtil.getLocalApkPath(context, packageName, versionCode));
+        File file;
+
+        if (null != localFilePath)
+            file = new File(localFilePath);
+        else
+            file = new File(PathUtil.getLocalApkPath(context, packageName, versionCode));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
             intent.setData(FileProvider.getUriForFile(context, "com.aurora.store.fileProvider", file));
