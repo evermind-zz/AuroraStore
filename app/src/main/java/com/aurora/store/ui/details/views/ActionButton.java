@@ -43,6 +43,7 @@ import com.aurora.store.exception.AppNotFoundException;
 import com.aurora.store.exception.NotPurchasedException;
 import com.aurora.store.installer.Uninstaller;
 import com.aurora.store.model.App;
+import com.aurora.store.service.updater.AccessUpdateService;
 import com.aurora.store.task.DeliveryData;
 import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.util.Accountant;
@@ -185,7 +186,7 @@ public class ActionButton extends AbstractDetails {
             btnPositive.setText(R.string.details_installing);
             btnPositive.setEnabled(false);
             //notification.notifyInstalling();
-            AuroraApplication.getInstaller().install(app);
+            AccessUpdateService.installAppOnly(context, app);
         };
     }
 
@@ -405,7 +406,7 @@ public class ActionButton extends AbstractDetails {
                             btnPositive.setEnabled(false);
                         });
                         //Call the installer
-                        AuroraApplication.getInstaller().install(app);
+                        AccessUpdateService.installAppOnly(context, app);
                     }
                     fetch.removeListener(this);
                 }
