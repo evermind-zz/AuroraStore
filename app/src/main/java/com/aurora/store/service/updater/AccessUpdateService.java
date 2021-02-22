@@ -25,6 +25,10 @@ public class AccessUpdateService {
         connectServiceAndCallMethod(context, appsToBeUpdated, FuncCancelUpdate());
     }
 
+    static public void installAppOnly(Context context, App appToBeUpdated) {
+        connectServiceAndCallMethod(context, appToBeUpdated, FuncInstallOnly());
+    }
+
     static private Func2 FuncDownloadAndInstall() {
         return new Func2<UpdateService, List<App>, Void>() {
             @Override
@@ -45,14 +49,24 @@ public class AccessUpdateService {
         };
     }
 
+    static private Func2 FuncInstallOnly() {
+        return new Func2<UpdateService, App, Void>() {
+            @Override
+            public Void call(UpdateService service, App app) {
+                service.installOnly(app);
+                return null;
+            }
+        };
+    }
+
     /**
      * This methods establish a ServiceConnection to the @see UpdateService and executes a function
      * and terminates the ServiceConnection afterwards.
      * @param context
-     * @param apps the List of Apps you want to handle
+     * @param apps T is a List of Apps or App object you want to handle
      * @param func Implement what remote function should be called
      */
-    static private void connectServiceAndCallMethod(Context context, List<App> apps, Func2 func) {
+    static private <T> void connectServiceAndCallMethod(Context context, T apps, Func2 func) {
         startUpdateService(context, "", false);
         RxServiceConnection.bind(context, new Intent(context, UpdateService.class)) // bind the service
                 .subscribe(new Observer<Service>() {

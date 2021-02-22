@@ -65,7 +65,7 @@ public class UpdateService extends IUpdateService {
     private static MutableLiveData<Boolean> updateOngoing;
 
     //for verification that we have no more downloads and installation completed
-    private Map<String, ObservableDeliveryData.DeliveryDataBundle> trackUpdateApps = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, App> trackUpdateApps = Collections.synchronizedMap(new HashMap<>());
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private IUpdateServiceDownloader downloader;
@@ -194,14 +194,14 @@ public class UpdateService extends IUpdateService {
 
     @Override
     public void installOnly(App app) {
+        trackUpdateApps.put(app.getPackageName(), app);
         AuroraApplication.getInstaller().NEWenqueueApp(app);
     }
 
     @Override
     public void downloadAndInstallBundle(ObservableDeliveryData.DeliveryDataBundle bundle) {
-        trackUpdateApps.put(bundle.getApp().getPackageName(), bundle);
+        trackUpdateApps.put(bundle.getApp().getPackageName(), bundle.getApp());
         publisher.onNext(bundle);
-
     }
 
     // cancel only those updates we are actually managing
