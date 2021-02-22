@@ -62,7 +62,8 @@ public class AppInstallerRooted extends AppInstallerAbstract {
     private boolean doWeGetRootAccess(String packageName) {
         boolean retvalue = true;
         if (root.isTerminated() || !root.isAcquired()) {
-            Root.requestRoot();
+            // recreate root access object and check if successful
+            root = new Root();
             if (!root.isAcquired()) {
                 ContextUtil.toastLong(getContext(), "Root access not available");
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
