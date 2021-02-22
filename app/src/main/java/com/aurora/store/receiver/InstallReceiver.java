@@ -25,8 +25,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.aurora.store.AuroraApplication;
 import com.aurora.store.Constants;
+import com.aurora.store.installer.Installer;
+import com.aurora.store.model.App;
+import com.aurora.store.service.updater.AccessUpdateService;
 
 public class InstallReceiver extends BroadcastReceiver {
     @Override
@@ -34,9 +36,11 @@ public class InstallReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         if ((extras != null)) {
             final String packageName = extras.getString(Constants.INTENT_PACKAGE_NAME, "");
-            final String versionString = extras.getString(Constants.DOWNLOAD_VERSION_CODE);
-            if (!packageName.isEmpty() && versionString != null) {
-                AuroraApplication.getInstaller().install(packageName, Integer.parseInt(versionString));
+            final String versionCode = extras.getString(Constants.DOWNLOAD_VERSION_CODE);
+            final String displayName = extras.getString(Constants.DOWNLOAD_DISPLAY_NAME);
+            if (!packageName.isEmpty() && versionCode != null) {
+                App app = Installer.getWrappedApp(displayName, packageName, Integer.parseInt(versionCode));
+                AccessUpdateService.installAppOnly(context, app);
             }
         }
     }

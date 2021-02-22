@@ -250,12 +250,13 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
             processApp(app);
     }
 
-    public void install(String packageName, int versionCode) {
+    public static App getWrappedApp(String displayName, String packageName, int versionCode) {
         // just wrap a new App instance for installing purpose only
         App app = new App();
+        app.setDisplayName(displayName);
         app.setPackageName(packageName);
         app.setVersionCode(versionCode);
-        install(app);
+        return app;
     }
 
     private void processApp(App app) {
