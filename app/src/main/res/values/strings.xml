@@ -334,6 +334,7 @@
     <string name="pref_requested_location_enable">"You need to manually enable Mock Location from the Developer Options. A VPN connection to nearby location is mandatory."</string>
     <string name="toast_api_build_delayed">"It is taking longer than expected"</string>
     <string name="dialog_uninstall_confirmation">"Do you want to uninstall this app ?"</string>
+    <string name="dialog_install_confirmation">"Do you want to install this app ?"</string>
     <string name="action_send">"Send"</string>
     <string name="dialog_unavailable_title">"App unavailable"</string>
     <string name="dialog_unavailable_desc">"The item you were attempting to purchase could not be found, try spoofing your device or switch account."</string>

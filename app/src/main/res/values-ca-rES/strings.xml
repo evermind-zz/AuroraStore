@@ -337,6 +337,7 @@ Tingueu en compte que Google Play Store no admet la baixada de versions arbitrà
     <string name="pref_requested_location_enable">"Cal que activeu manualment la ubicació simulada des de les Opcions de desenvolupador. Una connexió VPN a una ubicació propera és obligatòria."</string>
     <string name="toast_api_build_delayed">"Està trigant més del que s'esperava"</string>
     <string name="dialog_uninstall_confirmation">"Voleu desinstal·lar aquesta aplicació?"</string>
+    <string name="dialog_install_confirmation">"Voleu instal·lar aquesta aplicació?"</string>
     <string name="action_send">"Envia"</string>
     <string name="dialog_unavailable_title">"Aplicació no disponible"</string>
     <string name="dialog_unavailable_desc">"No s'ha pogut trobar l'ítem que intentaveu comprar, intentàveu falsificar el dispositiu o canvieu de compte."</string>
