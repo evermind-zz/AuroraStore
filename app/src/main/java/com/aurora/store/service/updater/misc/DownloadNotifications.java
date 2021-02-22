@@ -238,7 +238,9 @@ public class DownloadNotifications extends  AbstractFetchGroupListener {
                                 progressBigText.bigText(mContext.getString(R.string.notification_installation_auto));
                                 builder.addAction(R.drawable.ic_installation,
                                         mContext.getString(R.string.details_install),
-                                        getInstallIntent(downloadBundle.getPackageName(), downloadBundle.getVersionCode()));
+                                        getInstallIntent(downloadBundle.getPackageName(),
+                                                downloadBundle.getVersionCode(),
+                                                downloadBundle.getDisplayName()));
                             }
                         }
                         builder.setStyle(progressBigText);
@@ -311,10 +313,11 @@ public class DownloadNotifications extends  AbstractFetchGroupListener {
         return PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntent getInstallIntent(String packageName, String versionCode) {
+    private PendingIntent getInstallIntent(String packageName, String versionCode, String displayName) {
         //final Intent intent = new Intent(mContext, InstallReceiver.class);
         final Intent intent = new Intent(mContext, DownloaderReceiver.class); // TODO remove later -- just testing
         intent.putExtra(Constants.INTENT_PACKAGE_NAME, packageName);
+        intent.putExtra(Constants.DOWNLOAD_DISPLAY_NAME, displayName);
         intent.putExtra(Constants.DOWNLOAD_VERSION_CODE, versionCode);
         return PendingIntent.getBroadcast(mContext, packageName.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
