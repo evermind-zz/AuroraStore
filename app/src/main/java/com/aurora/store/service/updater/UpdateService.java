@@ -236,13 +236,16 @@ public class UpdateService extends IUpdateService {
         compositeDisposable.add(Observable.fromIterable(appsToBeUpdated)
                 .flatMap(app -> new ObservableDeliveryData(getApplicationContext()).getDeliveryData(app)
                         .doOnError(err -> {
-                            if (err instanceof MalformedRequestException || err instanceof NotPurchasedException) {
+                            if (err instanceof MalformedRequestException
+                                    || err instanceof NotPurchasedException
+                                    || err instanceof TooManyRequestsException) {
                                 QuickNotification.show(getApplication(),
                                         getString(R.string.action_updates),
                                         err.getMessage(),
                                         null);
                             }
                             processException(err);
+                            AuroraApplication.rxNotify(new Event(Event.SubType.DOWNLOAD, app.getPackageName(), Event.StatusType.API_FAILURE.ordinal()));
                             Log.e(err.getMessage());
                         })
                         .onErrorResumeNext(Observable.empty())
@@ -278,7 +281,8 @@ public class UpdateService extends IUpdateService {
                             break;
                         case DOWNLOAD:
                             if ((event.getStatus() == Event.StatusType.FAILURE.ordinal())
-                                || (event.getStatus() == Event.StatusType.CANCELED.ordinal())) {
+                                || (event.getStatus() == Event.StatusType.CANCELED.ordinal())
+                                || (event.getStatus() == Event.StatusType.API_FAILURE.ordinal())) {
 
                                 cleanupAndShutdownServiceIfNoLongerNeeded(event.getStringExtra());
 
