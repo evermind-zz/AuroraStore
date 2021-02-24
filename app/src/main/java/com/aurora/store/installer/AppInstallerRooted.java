@@ -37,7 +37,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AppInstallerRooted extends AppInstallerAbstract {
+public class AppInstallerRooted extends AppInstallerAbstract implements AppUnInstallerCommon{
 
     private static volatile AppInstallerRooted instance;
     protected static Root root;
@@ -78,7 +78,7 @@ public class AppInstallerRooted extends AppInstallerAbstract {
         for (File apkFile : apkFiles)
             totalSize += apkFile.length();
 
-        final String createSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+        final String createSessionResult = ensureCommandSucceeded(root,root.exec(String.format(Locale.getDefault(),
                 "pm install-create -i com.android.vending --user %s -r -S %d",
                 Util.getInstallationProfile(getContext()),
                 totalSize)));
@@ -92,14 +92,14 @@ public class AppInstallerRooted extends AppInstallerAbstract {
         // https://stackoverflow.com/questions/7841232/java-android-how-to-print-out-a-full-stack-trace#7841448
         android.util.Log.d("TestExcAuroraROOTInst1", android.util.Log.getStackTraceString(new Exception()));
         for (File apkFile : apkFiles)
-            ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+            ensureCommandSucceeded(root,root.exec(String.format(Locale.getDefault(),
                     "cat \"%s\" | pm install-write -S %d %d \"%s\"",
                     apkFile.getAbsolutePath(),
                     apkFile.length(),
                     sessionId,
                     apkFile.getName())));
 
-        String commitSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+        String commitSessionResult = ensureCommandSucceeded(root,root.exec(String.format(Locale.getDefault(),
                 "pm install-commit %d",
                 sessionId)));
 
@@ -141,11 +141,5 @@ public class AppInstallerRooted extends AppInstallerAbstract {
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
             }
         }
-    }
-
-    protected String ensureCommandSucceeded(String result) {
-        if (result == null || result.length() == 0)
-            throw new RuntimeException(root.readError());
-        return result;
     }
 }

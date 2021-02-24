@@ -47,7 +47,7 @@ public class AppInstallerRootedKitkat extends AppInstallerRooted{
         android.util.Log.d("TestExcAuroraROOTInst1", android.util.Log.getStackTraceString(new Exception()));
         String commitSessionResult = null;
         for (File apkFile : apkFiles)
-            commitSessionResult = ensureCommandSucceeded(root.exec(String.format(Locale.getDefault(),
+            commitSessionResult = ensureCommandSucceeded(root,root.exec(String.format(Locale.getDefault(),
                 "pm install -i com.android.vending -r -d \"%s\"",
                 apkFile.getAbsolutePath() )));
 

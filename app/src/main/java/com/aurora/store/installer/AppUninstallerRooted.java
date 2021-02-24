@@ -27,7 +27,7 @@ import com.aurora.store.model.App;
 import com.aurora.store.util.Log;
 import com.aurora.store.util.Root;
 
-public class AppUninstallerRooted {
+public class AppUninstallerRooted implements AppUnInstallerCommon{
 
     private Root root;
 
@@ -45,16 +45,10 @@ public class AppUninstallerRooted {
             }
             // redirect stderr to stdout as at least on KitKat Emulator the result 'Success'
             // is not present on stdout
-            Log.d(ensureCommandSucceeded(root.exec("pm clear " + app.getPackageName() + " 2>&1")));
-            Log.d(ensureCommandSucceeded(root.exec("pm uninstall " + app.getPackageName())));
+            Log.d(ensureCommandSucceeded(root,root.exec("pm clear " + app.getPackageName() + " 2>&1")));
+            Log.d(ensureCommandSucceeded(root,root.exec("pm uninstall " + app.getPackageName())));
         } catch (Exception e) {
             Log.w(e.getMessage());
         }
-    }
-
-    private String ensureCommandSucceeded(String result) {
-        if (result == null || result.length() == 0)
-            throw new RuntimeException(root.readError());
-        return result;
     }
 }
