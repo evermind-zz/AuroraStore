@@ -21,8 +21,6 @@
 package com.aurora.store.ui.details.views;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
@@ -40,6 +38,7 @@ import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.ui.details.ReadMoreActivity;
 import com.aurora.store.ui.view.DevInfoLayout;
 import com.aurora.store.ui.view.FeatureChip;
+import com.aurora.store.util.AppUtil;
 import com.aurora.store.util.ContextUtil;
 import com.aurora.store.util.TextUtil;
 import com.aurora.store.util.Util;
@@ -53,7 +52,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -190,15 +188,14 @@ public class GeneralDetails extends AbstractDetails {
     }
 
     private void drawVersion() {
-        String versionName = app.getVersionName();
-        DefaultArtifactVersion defaultArtifactVersion = new DefaultArtifactVersion(versionName);
-        int versionCode = app.getVersionCode();
+        String updateVersionName = app.getVersionName();
+        int updateVersionCode = app.getVersionCode();
 
-        if (TextUtils.isEmpty(versionName)) {
+        if (TextUtils.isEmpty(updateVersionName)) {
             return;
         }
 
-        app_version.setText(StringUtils.joinWith(".", versionName, versionCode));
+        app_version.setText(StringUtils.joinWith("[", updateVersionName, updateVersionCode) + "]");
         app_version.setVisibility(View.VISIBLE);
         new Timer().schedule(new TimerTask() {
             @Override
@@ -209,34 +206,11 @@ public class GeneralDetails extends AbstractDetails {
             }
         }, 3000);
 
-        if (!app.isInstalled()) {
-            return;
-        }
-
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(app.getPackageName(), 0);
-            String currentVersion = info.versionName;
-            DefaultArtifactVersion currentVersionName = new DefaultArtifactVersion(info.versionName);
-
-            int currentVersionCode = info.versionCode;
-            boolean updatable = false;
-
-            if (currentVersionName.compareTo(defaultArtifactVersion) < 0) {
-                updatable = true;
-            } else if (currentVersionName.compareTo(defaultArtifactVersion) == 0
-                    && currentVersionCode < versionCode) {
-                updatable = true;
+        if (app.isInstalled()) { // in case app is installed we want to show both versions: 'old >> new'
+            String stringWithBothVersions = AppUtil.getOldAndNewVersionsAsSingleString(context, app, updateVersionName, updateVersionCode);
+            if (null != stringWithBothVersions) {
+                app_version.setText(stringWithBothVersions);
             }
-
-            if (updatable)
-                app_version.setText(new StringBuilder()
-                        .append(currentVersion)
-                        .append(".")
-                        .append(currentVersionCode)
-                        .append(" >> ")
-                        .append(versionName).append(".").append(versionCode));
-        } catch (PackageManager.NameNotFoundException e) {
-            // We've checked for that already
         }
     }
 
