@@ -19,14 +19,12 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class UpdatableAppsModel extends BaseViewModel {
 
     private MutableLiveData<List<UpdatesItem>> data = new MutableLiveData<>();
     private MutableLiveData<Boolean> updateOngoing = new MutableLiveData<>();
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public UpdatableAppsModel(@NonNull Application application) {
         super(application);
@@ -57,12 +55,12 @@ public class UpdatableAppsModel extends BaseViewModel {
         return new Observer<List<App>>() {
             @Override
             public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-                compositeDisposable.add(d);
+                disposable.add(d);
             }
 
             @Override
             public void onNext(@io.reactivex.annotations.NonNull List<App> list) {
-                compositeDisposable.add(Observable.just(list)
+                disposable.add(Observable.just(list)
                         .map(UpdatableAppsModel.this::sortList)
                         .flatMap(apps -> Observable
                                 .fromIterable(apps)
