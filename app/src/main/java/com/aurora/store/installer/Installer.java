@@ -215,7 +215,6 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
 
             Log.i("Package Installer -> %s : %s", displayName, TextUtil.emptyIfNull(statusMessage));
 
-            clearNotification(app);
 
             if (status == PackageInstaller.STATUS_SUCCESS) {
                 sendStatusBroadcast(intentPackageName, Event.StatusType.SUCCESS.ordinal());
@@ -226,11 +225,19 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
                 sendStatusBroadcast(intentPackageName, Event.StatusType.FAILURE.ordinal());
             }
 
-            QuickNotification.show(
-                    context,
-                    displayName,
-                    statusMessage,
-                    getContentIntent(intentPackageName));
+            if (null != app) {
+                QuickNotification.show(app.getPackageName(),
+                        app.getPackageName().hashCode(),
+                        context,
+                        displayName,
+                        statusMessage,
+                        getContentIntent(intentPackageName));
+            } else {
+                QuickNotification.show(context,
+                        displayName,
+                        statusMessage,
+                        getContentIntent(intentPackageName));
+            }
 
             NEWappHashMap.remove(intentPackageName);
         }
