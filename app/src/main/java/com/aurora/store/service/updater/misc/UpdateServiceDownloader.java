@@ -144,6 +144,5 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
     public void onDestroy() {
         removeFetchListener(downloadsNotifications);
         removeRemainingFetchListeners();
-        fetch.deleteAll();
     }
 }
