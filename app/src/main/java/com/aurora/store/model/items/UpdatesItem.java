@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aurora.store.GlideApp;
 import com.aurora.store.R;
 import com.aurora.store.model.App;
+import com.aurora.store.util.AppUtil;
 import com.aurora.store.util.ViewUtil;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -105,7 +106,15 @@ public class UpdatesItem extends AbstractItem<UpdatesItem.ViewHolder> {
             fillAppDetails(context, versionStringList, extraStringList, item.getApp());
 
             txtTitle.setText(app.getDisplayName());
-            txtVersion.setText(StringUtils.join(versionStringList.toArray(), " • "));
+
+            String stringWithBothVersions = AppUtil.getOldAndNewVersionsAsSingleString(context, app, app.getVersionName(), app.getVersionCode());
+            if (null != stringWithBothVersions)
+                txtVersion.setText(stringWithBothVersions);
+            else
+                txtVersion.setText(StringUtils.join(versionStringList.toArray(), " • "));
+
+            txtVersion.setSelected(true); // to get android:ellipsize="marquee" going
+
             txtExtra.setText(StringUtils.join(extraStringList.toArray(), " • "));
             txtChanges.setText(app.getChanges().isEmpty()
                     ? context.getString(R.string.details_no_changes)
