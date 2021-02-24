@@ -53,7 +53,7 @@ public class UpdatableAppsModel extends BaseViewModel {
         UpdateRepository.getInstance().fetchData(getApplication(), doUpdate);
     }
 
-    private Observer<List<App>> createListObserver() {
+    private Observer<List<App>> createListObserver(UpdatableAppsModel updatableAppsModel) {
         return new Observer<List<App>>() {
             @Override
             public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
@@ -69,14 +69,15 @@ public class UpdatableAppsModel extends BaseViewModel {
                                 .map(UpdatesItem::new))
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(updatesItems ->
-                        {
-                            data.setValue(updatesItems);
-                        }));
+                        .subscribe(updatesItems -> data.setValue(updatesItems),
+                                throwable -> updatableAppsModel.handleError(throwable))
+                );
             }
 
             @Override
-            public void onError(@io.reactivex.annotations.NonNull Throwable e) { }
+            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+               handleError(e);
+            }
 
             @Override
             public void onComplete() { }
@@ -92,7 +93,7 @@ public class UpdatableAppsModel extends BaseViewModel {
     }
 
     private void initObserver() {
-        UpdateRepository.getInstance().observeData(createListObserver());
+        UpdateRepository.getInstance().observeData(createListObserver(this));
     }
     @Override
     protected void onCleared() {
