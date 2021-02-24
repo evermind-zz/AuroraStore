@@ -134,9 +134,10 @@ public class AppInstallerRooted extends AppInstallerAbstract implements AppUnIns
                 // java.lang.RuntimeException: Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]
                 || e.getMessage().contains("INSTALL_FAILED_INSUFFICIENT_STORAGE")
                 // java.lang.RuntimeException: Error: java.lang.IllegalStateException: ☃Requested internal only, but not enough space
-                || e.getMessage().contains("Requested internal only, but not enough space"))
-            {
+                || e.getMessage().contains("Requested internal only, but not enough space")) {
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_STORAGE, packageName);
+            } else if (e.getMessage().contains("INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES")) {
+                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_CONFLICT, packageName);
             } else {
                 dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
             }
