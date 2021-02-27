@@ -19,10 +19,8 @@ import com.aurora.store.Constants;
 import com.aurora.store.GlideApp;
 import com.aurora.store.R;
 import com.aurora.store.download.DownloadManager;
-import com.aurora.store.receiver.DownloadCancelReceiver;
-import com.aurora.store.receiver.DownloadPauseReceiver;
-import com.aurora.store.receiver.DownloadResumeReceiver;
 import com.aurora.store.receiver.InstallReceiver;
+import com.aurora.store.service.updater.misc.DownloaderReceiver;
 import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.ui.single.activity.DownloadsActivity;
 import com.aurora.store.util.Log;
@@ -47,7 +45,11 @@ import lombok.Getter;
 
 public class NotificationService extends Service {
 
-    public static final String FETCH_GROUP_ID = "FETCH_GROUP_ID";
+    public static final String FETCH_GROUP_ID = "com.aurora.store.service.NotificationService.FETCH_GROUP_ID";
+    public static final String FETCH_PAUSE = "com.aurora.store.service.NotificationService.FETCH_PAUSE";
+    public static final String FETCH_RESUME = "com.aurora.store.service.NotificationService.FETCH_RESUME";
+    public static final String FETCH_CANCEL = "com.aurora.store.service.NotificationService.FETCH_CANCEL";
+    public static final String FETCH_PACKAGE_NAME = "com.aurora.store.service.NotificationService.FETCH_PACKAGE_NAME";
 
     public static NotificationService INSTANCE = null;
     private final ArrayMap<String, DownloadBundle> bundleArrayMap = new ArrayMap<>();
@@ -227,7 +229,7 @@ public class NotificationService extends Service {
 
                     builder.addAction(new NotificationCompat.Action.Builder(R.drawable.ic_download_cancel,
                             getString(R.string.action_cancel),
-                            getCancelIntent(groupId)).build());
+                            getCancelIntent(downloadBundle.getPackageName(), groupId)).build());
 
                     if (progress < 0)
                         builder.setProgress(100, 0, true);
@@ -307,20 +309,24 @@ public class NotificationService extends Service {
     }
 
     private PendingIntent getPauseIntent(int groupId) {
-        final Intent intent = new Intent(this, DownloadPauseReceiver.class);
+        final Intent intent = new Intent(this, DownloaderReceiver.class);
+        intent.setAction(FETCH_PAUSE);
         intent.putExtra(FETCH_GROUP_ID, groupId);
         return PendingIntent.getBroadcast(this, groupId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private PendingIntent getResumeIntent(int groupId) {
-        final Intent intent = new Intent(this, DownloadResumeReceiver.class);
+        final Intent intent = new Intent(this, DownloaderReceiver.class);
+        intent.setAction(FETCH_RESUME);
         intent.putExtra(FETCH_GROUP_ID, groupId);
         return PendingIntent.getBroadcast(this, groupId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntent getCancelIntent(int groupId) {
-        final Intent intent = new Intent(this, DownloadCancelReceiver.class);
+    private PendingIntent getCancelIntent(String packageName, int groupId) {
+        final Intent intent = new Intent(this, DownloaderReceiver.class);
+        intent.setAction(FETCH_CANCEL);
         intent.putExtra(FETCH_GROUP_ID, groupId);
+        intent.putExtra(FETCH_PACKAGE_NAME, packageName);
         return PendingIntent.getBroadcast(this, groupId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

@@ -11,11 +11,11 @@ import com.aurora.store.events.Event;
 import com.aurora.store.util.Log;
 import com.tonyodev.fetch2.Fetch;
 
-import static com.aurora.store.service.updater.misc.DownloadNotifications.FETCH_GROUP_ID;
-import static com.aurora.store.service.updater.misc.DownloadNotifications.FETCH_CANCEL;
-import static com.aurora.store.service.updater.misc.DownloadNotifications.FETCH_PACKAGE_NAME;
-import static com.aurora.store.service.updater.misc.DownloadNotifications.FETCH_PAUSE;
-import static com.aurora.store.service.updater.misc.DownloadNotifications.FETCH_RESUME;
+import static com.aurora.store.service.NotificationService.FETCH_GROUP_ID;
+import static com.aurora.store.service.NotificationService.FETCH_CANCEL;
+import static com.aurora.store.service.NotificationService.FETCH_PACKAGE_NAME;
+import static com.aurora.store.service.NotificationService.FETCH_PAUSE;
+import static com.aurora.store.service.NotificationService.FETCH_RESUME;
 
 public class DownloaderReceiver extends BroadcastReceiver {
 
@@ -31,11 +31,10 @@ public class DownloaderReceiver extends BroadcastReceiver {
             return;
         }
 
+        groupId = extras.getInt(FETCH_GROUP_ID, -1);
         if ((action.equals(FETCH_RESUME))) {
-            groupId = extras.getInt(FETCH_GROUP_ID, -1);
             fetch.resumeGroup(groupId);
         } else if ((action.equals(FETCH_PAUSE))) {
-            groupId = extras.getInt(FETCH_GROUP_ID, -1);
             fetch.pauseGroup(groupId);
         } else if ((action.equals(FETCH_CANCEL))) {
             // we don't call cancelGroup() here instead let Event.StatusType.CANCEL receiver handle
