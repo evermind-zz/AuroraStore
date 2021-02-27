@@ -6,8 +6,6 @@ import android.content.pm.PackageManager;
 
 import com.aurora.store.model.App;
 
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-
 public class AppUtil {
     /**
      * get a string with old and new version: 'old >> new'
@@ -19,16 +17,10 @@ public class AppUtil {
      * @return // will be null if there is no update available
      */
     public static String getOldAndNewVersionsAsSingleString(String currentVersionName, int currentVersionCode, String updateVersionName, int updateVersionCode) {
-        DefaultArtifactVersion currentArtifactVersion = new DefaultArtifactVersion(currentVersionName);
-        DefaultArtifactVersion updateArtifactVersion = new DefaultArtifactVersion(updateVersionName);
         String bothVersionsAsString = null;
-
         boolean updatable = false;
 
-        if (currentArtifactVersion.compareTo(updateArtifactVersion) < 0) {
-            updatable = true;
-        } else if (currentArtifactVersion.compareTo(updateArtifactVersion) == 0
-                && currentVersionCode < updateVersionCode) {
+        if (currentVersionCode < updateVersionCode) {
             updatable = true;
         }
 
