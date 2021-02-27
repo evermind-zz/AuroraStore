@@ -25,6 +25,7 @@ import com.aurora.store.service.updater.misc.UpdateServiceDownloader;
 import com.aurora.store.task.ObservableDeliveryData;
 import com.aurora.store.ui.main.AuroraActivity;
 import com.aurora.store.util.Log;
+import com.aurora.store.util.Util;
 import com.dragons.aurora.playstoreapiv2.AuthException;
 import com.ivianuu.rxserviceconnection.RxBinder;
 import com.tonyodev.fetch2.Request;
@@ -96,6 +97,9 @@ public class UpdateService extends IUpdateService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //Check & start notification service
+        Util.startNotificationService(this);
 
         createNotificationChannel();
         downloader = new UpdateServiceDownloader(getApplicationContext(),this);
