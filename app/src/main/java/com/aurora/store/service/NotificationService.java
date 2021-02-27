@@ -193,7 +193,7 @@ public class NotificationService extends Service {
                     break;
                 default:
                     builder.setSmallIcon(android.R.drawable.stat_sys_download);
-                    builder.setContentText(getString(R.string.download_metadata));
+                    builder.setContentText(download.getFileUri().getLastPathSegment());
                     break;
             }
 
