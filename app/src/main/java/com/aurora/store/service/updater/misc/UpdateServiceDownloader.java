@@ -36,7 +36,6 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
     private List<FetchListener> trackListener;
     Context context;
     private Fetch fetch;
-    private DownloadNotifications downloadsNotifications;
 
     public UpdateServiceDownloader(Context applicationContext, IUpdateService updateService) {
         context = applicationContext;
@@ -45,9 +44,6 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
 
         fetch = DownloadManager.getFetchInstance(context);
         fetch.cancelAll();
-
-        downloadsNotifications = new DownloadNotifications(context);
-        addFetchListener(downloadsNotifications);
     }
 
     @Override
@@ -142,7 +138,6 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
 
     @Override
     public void onDestroy() {
-        removeFetchListener(downloadsNotifications);
         removeRemainingFetchListeners();
     }
 }
