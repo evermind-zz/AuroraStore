@@ -20,7 +20,7 @@ import com.aurora.store.GlideApp;
 import com.aurora.store.R;
 import com.aurora.store.download.DownloadManager;
 import com.aurora.store.receiver.InstallReceiver;
-import com.aurora.store.service.updater.misc.DownloaderReceiver;
+import com.aurora.store.receiver.DownloaderReceiver;
 import com.aurora.store.ui.details.DetailsActivity;
 import com.aurora.store.ui.single.activity.DownloadsActivity;
 import com.aurora.store.util.Log;

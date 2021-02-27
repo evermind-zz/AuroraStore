@@ -1,13 +1,11 @@
-package com.aurora.store.service.updater.misc;
+package com.aurora.store.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.aurora.store.AuroraApplication;
 import com.aurora.store.download.DownloadManager;
-import com.aurora.store.events.Event;
 import com.aurora.store.util.DownloadUtil;
 import com.aurora.store.util.Log;
 import com.tonyodev.fetch2.Fetch;
