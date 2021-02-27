@@ -289,10 +289,6 @@ public class UpdateService extends IUpdateService {
                                 || (event.getStatus() == Event.StatusType.API_FAILURE.ordinal())) {
 
                                 cleanupAndShutdownServiceIfNoLongerNeeded(event.getStringExtra());
-
-                            } else if (event.getStatus() == Event.StatusType.CANCEL.ordinal()) {
-                                String packageName = event.getStringExtra();
-                                downloader.cancelAppDownload(packageName);
                             }
                             break;
                     }
