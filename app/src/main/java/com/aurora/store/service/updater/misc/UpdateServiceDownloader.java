@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class UpdateServiceDownloader implements IUpdateServiceDownloader {
@@ -36,11 +38,13 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
     private List<FetchListener> trackListener;
     Context context;
     private Fetch fetch;
+    CompositeDisposable compositeDisposable;
 
     public UpdateServiceDownloader(Context applicationContext, IUpdateService updateService) {
         context = applicationContext;
         this.updateService = updateService;
         trackListener = new ArrayList<>();
+        compositeDisposable = new CompositeDisposable();
 
         fetch = DownloadManager.getFetchInstance(context);
         fetch.cancelAll();
@@ -92,13 +96,15 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
 
     @Override
     public void cancelAppsDownload(List<App> cancelApps) {
-        Observable.fromIterable(cancelApps)
+        Disposable disposable = Observable.fromIterable(cancelApps)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .doOnNext(app -> {
                     cancelAppDownload(app.getPackageName());
                 })
-        .subscribe();
+                .subscribe();
+
+        compositeDisposable.add(disposable);
     }
 
     private void addFetchListener(FetchListener listener) {
@@ -122,5 +128,6 @@ public class UpdateServiceDownloader implements IUpdateServiceDownloader {
     @Override
     public void onDestroy() {
         removeRemainingFetchListeners();
+        compositeDisposable.dispose();
     }
 }
