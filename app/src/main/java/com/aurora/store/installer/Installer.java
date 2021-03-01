@@ -193,6 +193,16 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
             apkFiles.add(file);
         }
 
+
+        App app = NEWappHashMap.get(packageName);
+        if (null != app)
+            QuickNotification.show(app.getPackageName(),
+                    app.getPackageName().hashCode(),
+                    context,
+                    app.getDisplayName(),
+                    context.getString(R.string.details_installing),
+                    getContentIntent(packageName));
+
         packageInstaller.addInstallationStatusListener(NEWstatusListener);
         packageInstaller.installApkFiles(packageName, apkFiles);
     }
