@@ -117,7 +117,7 @@ public class AppInstallerRooted extends AppInstallerAbstract implements AppUnIns
             if (commitSessionResult.toLowerCase().contains("success"))
                 dispatchSessionUpdate(PackageInstaller.STATUS_SUCCESS, packageName);
             else
-                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
+                handleError(packageName, commitSessionResult);
         } catch (Exception e) {
             Log.w(e.getMessage());
 
@@ -129,18 +129,24 @@ public class AppInstallerRooted extends AppInstallerAbstract implements AppUnIns
                     android.util.Log.d("TestExcAuroraROOTInst3", android.util.Log.getStackTraceString(e.getCause()));
                 }
             }
-            // java.lang.RuntimeException: Failure [INSTALL_FAILED_CONTAINER_ERROR: Failed to extract native libraries, res=-18]
-            if (e.getMessage().contains("INSTALL_FAILED_CONTAINER_ERROR")
+
+            handleError(packageName, e.getMessage());
+        }
+    }
+
+    private void handleError(String packageName, String errorMessage) {
+
+        // java.lang.RuntimeException: Failure [INSTALL_FAILED_CONTAINER_ERROR: Failed to extract native libraries, res=-18]
+        if (errorMessage.contains("INSTALL_FAILED_CONTAINER_ERROR")
                 // java.lang.RuntimeException: Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]
-                || e.getMessage().contains("INSTALL_FAILED_INSUFFICIENT_STORAGE")
+                || errorMessage.contains("INSTALL_FAILED_INSUFFICIENT_STORAGE")
                 // java.lang.RuntimeException: Error: java.lang.IllegalStateException: ☃Requested internal only, but not enough space
-                || e.getMessage().contains("Requested internal only, but not enough space")) {
-                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_STORAGE, packageName);
-            } else if (e.getMessage().contains("INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES")) {
-                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_CONFLICT, packageName);
-            } else {
-                dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
-            }
+                || errorMessage.contains("Requested internal only, but not enough space")) {
+            dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_STORAGE, packageName);
+        } else if (errorMessage.contains("INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES")) {
+            dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_CONFLICT, packageName);
+        } else {
+            dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE, packageName);
         }
     }
 }
