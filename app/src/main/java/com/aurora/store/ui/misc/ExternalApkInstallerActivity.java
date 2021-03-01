@@ -1,5 +1,6 @@
 package com.aurora.store.ui.misc;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +11,7 @@ import com.aurora.store.R;
 import com.aurora.store.model.App;
 import com.aurora.store.service.updater.AccessUpdateService;
 import com.aurora.store.util.Log;
+import com.aurora.store.util.PathUtil;
 import com.aurora.store.util.ViewUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -18,10 +20,18 @@ import net.dongliu.apk.parser.bean.ApkMeta;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import androidx.appcompat.app.AppCompatActivity;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ExternalApkInstallerActivity extends AppCompatActivity {
+
+    private static final String SCHEME_PACKAGE = "package";
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,31 +40,48 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         Uri packageUri = intent.getData();
 
-        String scheme = packageUri.getScheme();
-        if (scheme != null && !"file".equals(scheme)) {
-            throw new IllegalArgumentException("unexpected scheme " + scheme);
-        }
+        checkPackageUri(packageUri);
 
-        installPackage(packageUri);
+        Callable installerCallable = new Callable<App>() {
+            @Override
+            public App call() throws Exception {
+                return getInstallPackage(packageUri);
+            }
+        };
+
+        disposable = Observable.<App>fromCallable(installerCallable)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( app -> askInstallDialog((App) app),
+                        error ->
+                                Log.e(error.toString())
+                );
     }
 
-    private void installPackage(Uri packageUri) {
-        App app = new App();
-        app.setLocalFilePathUri(packageUri.getPath());
-
-        try {
-            ApkFile apkFile = new ApkFile(new File(packageUri.getPath()));
-
-            ApkMeta apkMeta = apkFile.getApkMeta();
-            app.setPackageName(apkMeta.getPackageName());
-            app.setDisplayName(apkMeta.getLabel());
-            app.setVersionCode(safeLongToInt(apkMeta.getVersionCode()));
-
-            askInstallDialog(app);
-
-        } catch (IOException e) {
-            Log.e(e.getMessage());
+    private void checkPackageUri(Uri packageUri) {
+        if (packageUri != null && (packageUri.getScheme().equals(ContentResolver.SCHEME_FILE)
+                || packageUri.getScheme().equals(ContentResolver.SCHEME_CONTENT))) {
+            Log.d("whe have \"file\" or \"content\" scheme");
+        } else if (packageUri != null && packageUri.getScheme().equals(
+                ExternalApkInstallerActivity.SCHEME_PACKAGE)) {
+            Log.d("whe have \"package\" scheme");
+        } else if (packageUri != null && !"file".equals(packageUri.getScheme())) {
+            throw new IllegalArgumentException("unexpected scheme " + packageUri.getScheme());
         }
+    }
+
+    private App getInstallPackage(Uri packageUri) throws IOException {
+        App app = new App();
+        String path = PathUtil.getPathForUri(this, packageUri);
+        app.setLocalFilePathUri(path);
+
+        ApkFile apkFile = new ApkFile(new File(path));
+
+        ApkMeta apkMeta = apkFile.getApkMeta();
+        app.setPackageName(apkMeta.getPackageName());
+        app.setDisplayName(apkMeta.getLabel());
+        app.setVersionCode(safeLongToInt(apkMeta.getVersionCode()));
+        return app;
     }
 
     public int safeLongToInt(long number) {
@@ -86,5 +113,11 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         builder.setBackground(new ColorDrawable(backGroundColor));
         builder.create();
         builder.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
     }
 }
