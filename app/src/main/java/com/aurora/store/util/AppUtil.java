@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 
 import com.aurora.store.model.App;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class AppUtil {
     /**
      * get a string with old and new version: 'old >> new'
@@ -25,17 +27,9 @@ public class AppUtil {
         }
 
         if (updatable)
-            bothVersionsAsString = new StringBuilder()
-                    .append(currentVersionName)
-                    .append("[")
-                    .append(currentVersionCode)
-                    .append("]")
-                    .append(" >> ")
-                    .append(updateVersionName)
-                    .append("[")
-                    .append(updateVersionCode)
-                    .append("]")
-                    .toString();
+            bothVersionsAsString = getVersionString(currentVersionName, currentVersionCode)
+                    + " >> "
+                    + getVersionString(updateVersionName, updateVersionCode);
 
         return bothVersionsAsString;
     }
@@ -62,5 +56,13 @@ public class AppUtil {
             // We've checked for that already
         }
         return stringWithBothVersions;
+    }
+
+    public static String getVersionString(App app) {
+        return getVersionString(app.getVersionName(), app.getVersionCode());
+    }
+
+    public static String getVersionString(String versionName, int versionCode) {
+        return StringUtils.joinWith("[", versionName, versionCode) + "]";
     }
 }
