@@ -317,6 +317,7 @@ public class UpdateService extends IUpdateService {
     // or onDestroy() will never be called
     @Override
     public void onDestroy() {
+        Util.stopNotificationService(this);
         downloader.onDestroy();
         compositeDisposable.dispose();
         notifyStopped();

@@ -567,4 +567,13 @@ public class Util {
             Log.e(e.getMessage());
         }
     }
+
+    public static void stopNotificationService(Context context) {
+        try {
+            if (!NotificationService.isNotAvailable())
+                context.stopService(new Intent(context, NotificationService.class));
+        } catch (IllegalStateException e) {
+            Log.e(e.getMessage());
+        }
+    }
 }
