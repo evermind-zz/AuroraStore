@@ -49,7 +49,17 @@ public class QuickNotification {
                                          @NonNull String contentText,
                                          @Nullable PendingIntent contentIntent) {
         QuickNotification quickNotification = new QuickNotification(context);
-        quickNotification.show(null, -1, contentTitle, contentText, contentIntent); // -1 is not used
+        quickNotification.show(null, -1, contentTitle, contentText, contentIntent, R.drawable.ic_notification_outlined); // -1 is not used
+        return quickNotification;
+    }
+
+    public static QuickNotification show(@NonNull Context context,
+                                         @NonNull String contentTitle,
+                                         @NonNull String contentText,
+                                         @Nullable PendingIntent contentIntent,
+                                         int customIconResourceId) {
+            QuickNotification quickNotification = new QuickNotification(context);
+        quickNotification.show(null, -1, contentTitle, contentText, contentIntent, customIconResourceId); // -1 is not used
         return quickNotification;
     }
 
@@ -60,11 +70,22 @@ public class QuickNotification {
                                          @NonNull String contentText,
                                          @Nullable PendingIntent contentIntent) {
         QuickNotification quickNotification = new QuickNotification(context);
-        quickNotification.show(tag, id, contentTitle, contentText, contentIntent);
+        quickNotification.show(tag, id, contentTitle, contentText, contentIntent, R.drawable.ic_notification_outlined);
+        return quickNotification;
+    }
+    public static QuickNotification show(@NonNull String tag,
+                                         @NonNull Integer id,
+                                         @NonNull Context context,
+                                         @NonNull String contentTitle,
+                                         @NonNull String contentText,
+                                         @Nullable PendingIntent contentIntent,
+                                         int customIconResourceId) {
+        QuickNotification quickNotification = new QuickNotification(context);
+        quickNotification.show(tag, id, contentTitle, contentText, contentIntent, customIconResourceId);
         return quickNotification;
     }
 
-    private NotificationCompat.Builder buildNotification(String contentTitle, String contentText, PendingIntent contentIntent) {
+    private NotificationCompat.Builder buildNotification(String contentTitle, String contentText, PendingIntent contentIntent, int customIconResourceId ) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ALERT)
                 .setAutoCancel(true)
                 .setColor(context.getResources().getColor(R.color.colorAccent))
@@ -73,7 +94,7 @@ public class QuickNotification {
                 .setOnlyAlertOnce(true)
                 .setWhen(new Timestamp(new Date().getTime()).getTime())
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setSmallIcon(R.drawable.ic_notification_outlined);
+                .setSmallIcon(customIconResourceId);
 
         if (contentIntent != null)
             builder.setContentIntent(contentIntent);
@@ -81,10 +102,10 @@ public class QuickNotification {
         return builder;
     }
 
-    private void show(String tag, int id, String contentTitle, String contentText, PendingIntent contentIntent) {
+    private void show(String tag, int id, String contentTitle, String contentText, PendingIntent contentIntent, int customIconResourceId) {
         if (NotificationUtil.isNotificationEnabled(context)) {
             final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            final NotificationCompat.Builder builder = buildNotification(contentTitle, contentText, contentIntent);
+            final NotificationCompat.Builder builder = buildNotification(contentTitle, contentText, contentIntent, customIconResourceId);
 
             if (notificationManager != null)
                 if (null == tag)
