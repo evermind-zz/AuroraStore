@@ -229,12 +229,14 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
             Log.i("Package Installer -> %s : %s", displayName, TextUtil.emptyIfNull(statusMessage));
 
 
+            int notificationIcon = R.drawable.ic_notification_outlined;
             if (status == PackageInstaller.STATUS_SUCCESS) {
                 sendStatusBroadcast(intentPackageName, Event.StatusType.SUCCESS.ordinal());
                 if (app != null && Util.shouldDeleteApk(context)) {
                     clearInstallationFiles(app);
                 }
             } else {
+                notificationIcon = R.drawable.ic_download_fail;
                 sendStatusBroadcast(intentPackageName, Event.StatusType.FAILURE.ordinal());
             }
 
@@ -244,12 +246,14 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
                         context,
                         displayName,
                         statusMessage,
-                        getContentIntent(intentPackageName));
+                        getContentIntent(intentPackageName),
+                        notificationIcon);
             } else {
                 QuickNotification.show(context,
                         displayName,
                         statusMessage,
-                        getContentIntent(intentPackageName));
+                        getContentIntent(intentPackageName),
+                        notificationIcon);
             }
 
             NEWappHashMap.remove(intentPackageName);
