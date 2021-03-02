@@ -69,6 +69,7 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
     public static final String NATIVE = "0"; // the same value have to be here: R.string.INSTALLER_NATIVE
     public static final String ROOT = "1"; // the same value have to be here: R.string.INSTALLER_ROOT
     public static final String SERVICES = "2"; // the same value have to be here: R.string.INSTALLER_SERVICES
+    public static final int STATUS_FAILURE_DOWNGRADE = 1000; // make sure the integer won't conflict with Package PackageInstaller.STATUS_.*
     private Context context;
     private Map<String, App> appHashMap = new HashMap<>();
     private Map<String, App> NEWappHashMap = new HashMap<>();
@@ -388,6 +389,8 @@ public class Installer implements AppInstallerAbstract.InstallationStatusListene
 
     private String getStatusString(int status) {
         switch (status) {
+            case Installer.STATUS_FAILURE_DOWNGRADE:
+                return "Downgrade not allowed";
             case PackageInstaller.STATUS_FAILURE:
                 return context.getString(R.string.installer_status_failure);
             case PackageInstaller.STATUS_FAILURE_ABORTED:
