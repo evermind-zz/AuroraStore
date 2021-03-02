@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.aurora.store.R;
 import com.aurora.store.model.App;
 import com.aurora.store.service.updater.AccessUpdateService;
+import com.aurora.store.util.AppUtil;
 import com.aurora.store.util.Log;
 import com.aurora.store.util.PathUtil;
 import com.aurora.store.util.ViewUtil;
@@ -80,6 +81,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         ApkMeta apkMeta = apkFile.getApkMeta();
         app.setPackageName(apkMeta.getPackageName());
         app.setDisplayName(apkMeta.getLabel());
+        app.setVersionName(apkMeta.getVersionName());
         app.setVersionCode(safeLongToInt(apkMeta.getVersionCode()));
         return app;
     }
@@ -93,13 +95,18 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
     }
 
     private void askInstallDialog(App app) {
+
+        String versionString = AppUtil.getOldAndNewVersionsAsSingleString(this, app, app.getVersionName(), app.getVersionCode());
+        if (null == versionString)
+            versionString = AppUtil.getVersionString(app);
+
         // Process: com.aurora.store.legacy.testing, PID: 11379 java.lang.RuntimeException: Unable to start activity ComponentInfo{com.aurora.store.legacy.testing/com.aurora.store.ui.misc.ExternalApkInstallerActivity2}: java.lang.IllegalStateException: You need to use a Theme.AppCompat theme (or descendant) with this activity.
         // Getting above Exceptions if we use getApplicationContext() for the AlertDialog
         // so we use 'this'
         // more info see answer from A.K.: https://stackoverflow.com/questions/21814825/you-need-to-use-a-theme-appcompat-theme-or-descendant-with-this-activity
         Context context = this;
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setTitle(app.getDisplayName())
+                .setTitle(app.getDisplayName() + " "+ versionString)
                 .setMessage(context.getString(R.string.dialog_install_confirmation))
                 .setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
                     AccessUpdateService.installAppOnly(getApplicationContext(), app);
