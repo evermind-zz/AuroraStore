@@ -100,10 +100,9 @@ public class UpdatesItem extends AbstractItem<UpdatesItem.ViewHolder> {
         @Override
         public void bindView(@NotNull UpdatesItem item, @NotNull List<?> list) {
             final App app = item.getApp();
-            final List<String> versionStringList = new ArrayList<>();
             final List<String> extraStringList = new ArrayList<>();
 
-            fillAppDetails(context, versionStringList, extraStringList, item.getApp());
+            fillAppDetails(context, extraStringList, item.getApp());
 
             txtTitle.setText(app.getDisplayName());
 
@@ -111,7 +110,7 @@ public class UpdatesItem extends AbstractItem<UpdatesItem.ViewHolder> {
             if (null != stringWithBothVersions)
                 txtVersion.setText(stringWithBothVersions);
             else
-                txtVersion.setText(StringUtils.join(versionStringList.toArray(), " • "));
+                txtVersion.setText(AppUtil.getVersionString(app));
 
             txtVersion.setSelected(true); // to get android:ellipsize="marquee" going
 
@@ -157,8 +156,7 @@ public class UpdatesItem extends AbstractItem<UpdatesItem.ViewHolder> {
             imgIcon.setImageDrawable(null);
         }
 
-        public void fillAppDetails(Context context, List<String> versionStringList, List<String> extraStringList, App app) {
-            versionStringList.add(app.getVersionName() + "." + app.getVersionCode());
+        public void fillAppDetails(Context context, List<String> extraStringList, App app) {
             extraStringList.add(app.getUpdated());
             extraStringList.add(app.getSize() == 0 ? "N/A" : Formatter.formatShortFileSize(context, app.getSize()));
         }

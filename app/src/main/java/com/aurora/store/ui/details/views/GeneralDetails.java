@@ -195,7 +195,7 @@ public class GeneralDetails extends AbstractDetails {
             return;
         }
 
-        app_version.setText(StringUtils.joinWith("[", updateVersionName, updateVersionCode) + "]");
+        app_version.setText(AppUtil.getVersionString( updateVersionName, updateVersionCode));
         app_version.setVisibility(View.VISIBLE);
         new Timer().schedule(new TimerTask() {
             @Override
