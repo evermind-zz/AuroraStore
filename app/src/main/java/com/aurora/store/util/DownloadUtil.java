@@ -25,6 +25,7 @@ public class DownloadUtil {
             @Override
             public void call(@NotNull List<Download> result) {
                 AuroraApplication.rxNotify(new Event(Event.SubType.DOWNLOAD, packageName, Event.StatusType.CANCELED.ordinal()));
+                fetch.removeGroup(hashcode);
             }
         };
 
@@ -34,6 +35,7 @@ public class DownloadUtil {
                 Log.d("cancel download for package: " + packageName + " failed. With Error: " + result);
                 // nevertheless we say also here it was canceled to keep the system working
                 AuroraApplication.rxNotify(new Event(Event.SubType.DOWNLOAD, packageName, Event.StatusType.CANCELED.ordinal()));
+                fetch.removeGroup(hashcode);
             }
         };
 
