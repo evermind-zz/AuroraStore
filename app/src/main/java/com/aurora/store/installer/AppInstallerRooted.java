@@ -145,6 +145,8 @@ public class AppInstallerRooted extends AppInstallerAbstract implements AppUnIns
             dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_STORAGE, packageName);
         } else if (errorMessage.contains("INSTALL_FAILED_VERSION_DOWNGRADE")) {
             dispatchSessionUpdate(Installer.STATUS_FAILURE_DOWNGRADE, packageName);
+        } else if (errorMessage.contains("INSTALL_FAILED_VERIFICATION_FAILURE")) {
+            dispatchSessionUpdate(Installer.STATUS_FAILURE_VERIFICATION, packageName);
         } else if (errorMessage.contains("INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES")) {
             dispatchSessionUpdate(PackageInstaller.STATUS_FAILURE_CONFLICT, packageName);
         } else {
