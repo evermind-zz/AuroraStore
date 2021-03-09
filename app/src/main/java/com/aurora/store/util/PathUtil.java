@@ -32,7 +32,12 @@ import android.provider.MediaStore;
 import com.aurora.store.Constants;
 import com.aurora.store.model.App;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class PathUtil {
 
@@ -185,6 +190,63 @@ public class PathUtil {
 
         return null;
     }
+
+    public static String getPathForUriWrapper(final Context context, final Uri uri) {
+        try {
+            return getPathForUri(context, uri);
+        } catch (Exception e) {
+            Log.d(e.toString());
+        }
+
+        return testPathSegmentsAndGetValidPathIfPossible(uri);
+    }
+
+    /**
+     *
+     * @param packageUri
+     * @return null if no valid path was found
+     */
+   private static String testPathSegmentsAndGetValidPathIfPossible(Uri packageUri) {
+
+       List<String> listCopy = new ArrayList<>();
+       List<String> pathSegments = packageUri.getPathSegments();
+
+       ListIterator<String> listIterator = pathSegments.listIterator();
+       while(listIterator.hasNext()) {
+           listCopy.add(listIterator.next());
+       }
+
+       // reduce the path each time trying to get a match.
+       while (listCopy.size() > 1) { // > 1 because otherwise we have nothing after remove(0) is called
+           listCopy.remove(0);
+           String tempPath = "/" + StringUtils.join(listCopy, "/");
+
+           if (tempPath != null) {
+               File file = new File(tempPath);
+               if (file.exists())
+                   return tempPath;
+           }
+       }
+       return null;
+   }
+
+    public String getImagePath(Context context, Uri uri){
+        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":")+1);
+        cursor.close();
+
+        cursor = context.getContentResolver().query(
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
+    }
+
 
     /**
      * Get the value of the data column for this Uri. This is useful for

@@ -20,7 +20,10 @@ import net.dongliu.apk.parser.ApkFile;
 import net.dongliu.apk.parser.bean.ApkMeta;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +36,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
 
     private static final String SCHEME_PACKAGE = "package";
     private Disposable disposable;
+    boolean isCopyOfApkDueToNoDirectPathAvailable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +83,49 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         return schema;
     }
 
+    private boolean copyFile(Context context, Uri packageUri, File targetFile) {
+        try (InputStream in = context.getContentResolver().openInputStream(packageUri)) {
+            if (null == in) {
+                return false;
+            }
+            try (OutputStream out = new FileOutputStream(targetFile)) {
+                byte[] buffer = new byte[1024 * 1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) >= 0) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
+        } catch (IOException | SecurityException | IllegalStateException e) {
+            Log.w("Error copying apk from content URI", e);
+            return false;
+        }
+        return true;
+    }
+
     private App getInstallPackage(Uri packageUri) throws IOException {
         App app = new App();
-        String path = PathUtil.getPathForUri(this, packageUri);
-        app.setLocalFilePathUri(path);
+        String path = null;
 
         checkPackageUri(packageUri);
+
+        try {
+            path = PathUtil.getPathForUriWrapper(this, packageUri);
+        } catch (Exception e){
+            Log.e(e.toString());
+        }
+
+        if (path == null) { // could not extract path so create one taking inputStream from *Provider
+
+            File apkDirectory = new File(PathUtil.getRootApkPath(this));
+            File outputFile = File.createTempFile("appreciator", ".apk", apkDirectory);
+            path = outputFile.getAbsolutePath();
+
+            if (!copyFile(this, packageUri, outputFile)) {
+                outputFile.delete();
+                throw new RuntimeException("could not copy file: " + path);
+            }
+            isCopyOfApkDueToNoDirectPathAvailable = true;
+        }
 
         ApkFile apkFile = new ApkFile(new File(path));
 
@@ -93,6 +134,18 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         app.setDisplayName(apkMeta.getLabel());
         app.setVersionName(apkMeta.getVersionName());
         app.setVersionCode(safeLongToInt(apkMeta.getVersionCode()));
+
+        if (isCopyOfApkDueToNoDirectPathAvailable) { // rename file here as we need the metadata
+            File apkDirectory = new File(PathUtil.getRootApkPath(this));
+            String newFilename =  apkMeta.getPackageName() +"."+ apkMeta.getVersionCode() +".apk";
+            File fileWithNewName = new File(apkDirectory, newFilename);
+            File fileWithOldName = new File(path);
+            fileWithOldName.renameTo(fileWithNewName);
+
+            path = fileWithNewName.getAbsolutePath();
+        }
+        app.setLocalFilePathUri(path);
+
         return app;
     }
 
@@ -124,12 +177,22 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(context.getString(android.R.string.cancel), (dialog, which) -> {
                     dialog.dismiss();
+                    cleanupAfterDialogCanceled(app);
                     finish();
                 });
         int backGroundColor = ViewUtil.getStyledAttribute(context, android.R.attr.colorBackground);
         builder.setBackground(new ColorDrawable(backGroundColor));
         builder.create();
         builder.show();
+    }
+
+    private void cleanupAfterDialogCanceled(App app) {
+        if (isCopyOfApkDueToNoDirectPathAvailable) {
+            if (null != app.getLocalFilePathUri()) {
+                File copiedApk = new File(app.getLocalFilePathUri());
+                copiedApk.delete();
+            }
+        }
     }
 
     @Override
