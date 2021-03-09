@@ -37,6 +37,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
     private static final String SCHEME_PACKAGE = "package";
     private Disposable disposable;
     boolean isCopyOfApkDueToNoDirectPathAvailable = false;
+    String pathOfCopiedApk = null; // used only for cleanup
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
                 .subscribe( app -> askInstallDialog((App) app),
                         error -> {
                             Log.e(error.toString());
+                            cleanup();
                             finish();
                         }
                 );
@@ -119,6 +121,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
             File apkDirectory = new File(PathUtil.getRootApkPath(this));
             File outputFile = File.createTempFile("appreciator", ".apk", apkDirectory);
             path = outputFile.getAbsolutePath();
+            pathOfCopiedApk = path;
 
             if (!copyFile(this, packageUri, outputFile)) {
                 outputFile.delete();
@@ -144,6 +147,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
             fileWithOldName.renameTo(fileWithNewName);
 
             path = fileWithNewName.getAbsolutePath();
+            pathOfCopiedApk = path; // also store it here again as the path differs now
         }
         app.setLocalFilePathUri(path);
 
@@ -178,7 +182,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(context.getString(android.R.string.cancel), (dialog, which) -> {
                     dialog.dismiss();
-                    cleanupAfterDialogCanceled(app);
+                    cleanup();
                     finish();
                 });
         int backGroundColor = ViewUtil.getStyledAttribute(context, android.R.attr.colorBackground);
@@ -187,10 +191,10 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void cleanupAfterDialogCanceled(App app) {
+    private void cleanup() {
         if (isCopyOfApkDueToNoDirectPathAvailable) {
-            if (null != app.getLocalFilePathUri()) {
-                File copiedApk = new File(app.getLocalFilePathUri());
+            if (null != pathOfCopiedApk) {
+                File copiedApk = new File(pathOfCopiedApk);
                 copiedApk.delete();
             }
         }
