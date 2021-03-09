@@ -187,6 +187,9 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
                 });
         int backGroundColor = ViewUtil.getStyledAttribute(context, android.R.attr.colorBackground);
         builder.setBackground(new ColorDrawable(backGroundColor));
+        // source: https://stackoverflow.com/questions/6120567/android-how-to-get-a-modal-dialog-or-similar-modal-behavior
+        //         and more interesting stuff in the comments there
+        builder.setCancelable(false);
         builder.create();
         builder.show();
     }
