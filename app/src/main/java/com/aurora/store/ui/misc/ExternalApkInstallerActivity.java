@@ -138,7 +138,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
 
         if (isCopyOfApkDueToNoDirectPathAvailable) { // rename file here as we need the metadata
             File apkDirectory = new File(PathUtil.getRootApkPath(this));
-            String newFilename =  apkMeta.getPackageName() +"."+ apkMeta.getVersionCode() +".apk";
+            String newFilename =  PathUtil.getApkFileName(app.getPackageName(), app.getVersionCode());
             File fileWithNewName = new File(apkDirectory, newFilename);
             File fileWithOldName = new File(path);
             fileWithOldName.renameTo(fileWithNewName);
