@@ -128,8 +128,9 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         }
 
         ApkFile apkFile = new ApkFile(new File(path));
-
         ApkMeta apkMeta = apkFile.getApkMeta();
+        apkFile.close();
+
         app.setPackageName(apkMeta.getPackageName());
         app.setDisplayName(apkMeta.getLabel());
         app.setVersionName(apkMeta.getVersionName());
