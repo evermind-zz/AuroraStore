@@ -41,8 +41,6 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         Uri packageUri = intent.getData();
 
-        checkPackageUri(packageUri);
-
         Callable installerCallable = new Callable<App>() {
             @Override
             public App call() throws Exception {
@@ -54,27 +52,39 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe( app -> askInstallDialog((App) app),
-                        error ->
-                                Log.e(error.toString())
+                        error -> {
+                            Log.e(error.toString());
+                            finish();
+                        }
                 );
     }
 
-    private void checkPackageUri(Uri packageUri) {
-        if (packageUri != null && (packageUri.getScheme().equals(ContentResolver.SCHEME_FILE)
-                || packageUri.getScheme().equals(ContentResolver.SCHEME_CONTENT))) {
-            Log.d("whe have \"file\" or \"content\" scheme");
-        } else if (packageUri != null && packageUri.getScheme().equals(
-                ExternalApkInstallerActivity.SCHEME_PACKAGE)) {
-            Log.d("whe have \"package\" scheme");
-        } else if (packageUri != null && !"file".equals(packageUri.getScheme())) {
-            throw new IllegalArgumentException("unexpected scheme " + packageUri.getScheme());
+    private final String checkPackageUri(Uri packageUri) {
+        if (packageUri == null) {
+            throw new IllegalArgumentException("unexpected: Uri was null.");
         }
+
+        String schema = packageUri.getScheme();
+
+        switch (schema) {
+            case ContentResolver.SCHEME_FILE:
+            case ContentResolver.SCHEME_CONTENT:
+            case ExternalApkInstallerActivity.SCHEME_PACKAGE:
+                break;
+            default:
+                throw new IllegalArgumentException("unexpected scheme " + schema);
+        }
+
+        Log.d("whe have \"" + schema + "\" scheme");
+        return schema;
     }
 
     private App getInstallPackage(Uri packageUri) throws IOException {
         App app = new App();
         String path = PathUtil.getPathForUri(this, packageUri);
         app.setLocalFilePathUri(path);
+
+        checkPackageUri(packageUri);
 
         ApkFile apkFile = new ApkFile(new File(path));
 
