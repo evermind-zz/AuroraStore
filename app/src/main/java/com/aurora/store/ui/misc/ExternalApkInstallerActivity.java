@@ -19,11 +19,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import net.dongliu.apk.parser.ApkFile;
 import net.dongliu.apk.parser.bean.ApkMeta;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.Callable;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,26 +43,25 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
     private static final String SCHEME_PACKAGE = "package";
     private Disposable disposable;
     boolean isCopyOfApkDueToNoDirectPathAvailable = false;
-    String pathOfCopiedApk = null; // used only for cleanup
+    List<String> pathsOfCopiedApks = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        Uri packageUri = intent.getData();
 
-        Callable installerCallable = new Callable<App>() {
+        Callable installerCallable = new Callable<List<App>>() {
             @Override
-            public App call() throws Exception {
-                return getInstallPackage(packageUri);
+            public List<App>call() throws Exception {
+                return getInstallPackages(intent);
             }
         };
 
-        disposable = Observable.<App>fromCallable(installerCallable)
+        disposable = Observable.<List<App>>fromCallable(installerCallable)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( app -> askInstallDialog((App) app),
+                .subscribe( apps -> askInstallDialog((List<App>) apps),
                         error -> {
                             Log.e(error.toString());
                             cleanup();
@@ -104,9 +109,48 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         return true;
     }
 
-    private App getInstallPackage(Uri packageUri) throws IOException {
-        App app = new App();
+    private List<App> getInstallPackages(Intent intent) throws IOException {
+
+        Uri packageUri = null;
+        List<App> apps = new ArrayList<>();
+
+        switch (intent.getAction()) {
+            case Intent.ACTION_VIEW:
+            case Intent.ACTION_INSTALL_PACKAGE:
+                packageUri = intent.getData();
+                apps.add(getAppForPackageUri(packageUri));
+                break;
+            case Intent.ACTION_SEND:
+                packageUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                apps.add(getAppForPackageUri(packageUri));
+                break;
+            case Intent.ACTION_SEND_MULTIPLE: // here we may handle split apk
+                ArrayList<Uri> packageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                Iterator<Uri> listIterator = packageUris.iterator();
+
+                while (listIterator.hasNext()) {
+                    App result = getAppForPackageUri(listIterator.next());
+                    if (null != result)
+                        apps.add(result);
+
+                }
+                break;
+            default:
+        }
+
+        return apps;
+    }
+
+    /**
+     *
+     * @param packageUri
+     * @return  null will be returned if it is a split apk. We don't create a App object for them
+     * @throws IOException
+     */
+    private App getAppForPackageUri(Uri packageUri) throws IOException {
+
         String path = null;
+        App app = null;
 
         checkPackageUri(packageUri);
 
@@ -121,7 +165,7 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
             File apkDirectory = new File(PathUtil.getRootApkPath(this));
             File outputFile = File.createTempFile("appreciator", ".apk", apkDirectory);
             path = outputFile.getAbsolutePath();
-            pathOfCopiedApk = path;
+            pathsOfCopiedApks.add(path);
 
             if (!copyFile(this, packageUri, outputFile)) {
                 outputFile.delete();
@@ -134,22 +178,32 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         ApkMeta apkMeta = apkFile.getApkMeta();
         apkFile.close();
 
-        app.setPackageName(apkMeta.getPackageName());
-        app.setDisplayName(apkMeta.getLabel());
-        app.setVersionName(apkMeta.getVersionName());
-        app.setVersionCode(safeLongToInt(apkMeta.getVersionCode()));
+        String packageName = apkMeta.getPackageName();
+        String displayName = apkMeta.getLabel();
+        String versionName = apkMeta.getVersionName();
+        int versionCode = safeLongToInt(apkMeta.getVersionCode());
+        String split = apkMeta.getSplit();
+
 
         if (isCopyOfApkDueToNoDirectPathAvailable) { // rename file here as we need the metadata
             File apkDirectory = new File(PathUtil.getRootApkPath(this));
-            String newFilename =  PathUtil.getApkFileName(app.getPackageName(), app.getVersionCode(), null);
+            String newFilename =  PathUtil.getApkFileName(packageName, versionCode, split );
             File fileWithNewName = new File(apkDirectory, newFilename);
             File fileWithOldName = new File(path);
             fileWithOldName.renameTo(fileWithNewName);
 
             path = fileWithNewName.getAbsolutePath();
-            pathOfCopiedApk = path; // also store it here again as the path differs now
+            pathsOfCopiedApks.add(path); // also store it here again as the path differs now
         }
-        app.setLocalFilePathUri(path);
+
+        if (null == split) { // assume that this is the main apk and non split so we build a App object
+            app = new App();
+            app.setPackageName(packageName);
+            app.setDisplayName(displayName);
+            app.setVersionName(versionName);
+            app.setVersionCode(versionCode);
+            app.setLocalFilePathUri(path);
+        }
 
         return app;
     }
@@ -162,11 +216,18 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         return (int) number;
     }
 
-    private void askInstallDialog(App app) {
+    private void askInstallDialog(List<App> apps) {
 
-        String versionString = AppUtil.getOldAndNewVersionsAsSingleString(this, app, app.getVersionName(), app.getVersionCode());
-        if (null == versionString)
-            versionString = AppUtil.getVersionString(app);
+        ListIterator<App> listIterator = apps.listIterator();
+        List<String> titles = new ArrayList<>();
+        while (listIterator.hasNext()) {
+            App app = listIterator.next();
+
+            String versionString = AppUtil.getOldAndNewVersionsAsSingleString(this, app, app.getVersionName(), app.getVersionCode());
+            if (null == versionString)
+                versionString = AppUtil.getVersionString(app);
+            titles.add(app.getDisplayName() + versionString);
+        }
 
         // Process: com.aurora.store.legacy.testing, PID: 11379 java.lang.RuntimeException: Unable to start activity ComponentInfo{com.aurora.store.legacy.testing/com.aurora.store.ui.misc.ExternalApkInstallerActivity2}: java.lang.IllegalStateException: You need to use a Theme.AppCompat theme (or descendant) with this activity.
         // Getting above Exceptions if we use getApplicationContext() for the AlertDialog
@@ -174,10 +235,14 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
         // more info see answer from A.K.: https://stackoverflow.com/questions/21814825/you-need-to-use-a-theme-appcompat-theme-or-descendant-with-this-activity
         Context context = this;
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
-                .setTitle(app.getDisplayName() + " "+ versionString)
+                .setTitle(StringUtils.join(titles,'\n'))
                 .setMessage(context.getString(R.string.dialog_install_confirmation))
                 .setPositiveButton(context.getString(android.R.string.ok), (dialog, which) -> {
-                    AccessUpdateService.installAppOnly(getApplicationContext(), app);
+                    ListIterator<App> listIterator2 = apps.listIterator();
+                    while (listIterator2.hasNext()) {
+                        App app = listIterator2.next();
+                        AccessUpdateService.installAppOnly(getApplicationContext(), app);
+                    }
                     finish();
                 })
                 .setNegativeButton(context.getString(android.R.string.cancel), (dialog, which) -> {
@@ -196,9 +261,12 @@ public class ExternalApkInstallerActivity extends AppCompatActivity {
 
     private void cleanup() {
         if (isCopyOfApkDueToNoDirectPathAvailable) {
-            if (null != pathOfCopiedApk) {
-                File copiedApk = new File(pathOfCopiedApk);
-                copiedApk.delete();
+            if (null != pathsOfCopiedApks) {
+                ListIterator<String> listIterator = pathsOfCopiedApks.listIterator();
+                while (listIterator.hasNext()) {
+                    File copiedApk = new File(listIterator.next());
+                    copiedApk.delete();
+                }
             }
         }
     }
