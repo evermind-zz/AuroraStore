@@ -42,12 +42,16 @@ import java.util.ListIterator;
 public class PathUtil {
 
     static public File getApkPath(String packageName, int version) {
-        String filename = getApkFileName(packageName, version);
+        String filename = getApkFileName(packageName, version, null);
         return new File(getRootApkCopyPath(), filename);
     }
 
-    static public String getApkFileName(String packageName, int version) {
-        return packageName + "." + version + ".apk";
+    static public String getApkFileName(String packageName, int version, String split) {
+        if (null != split) {
+            return packageName + "." + version + "." + split + ".apk";
+        } else {
+            return packageName + "." + version + ".apk";
+        }
     }
 
     static public String getRootApkPath(Context context) {
