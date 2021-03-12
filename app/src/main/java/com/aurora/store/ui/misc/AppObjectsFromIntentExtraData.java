@@ -89,7 +89,10 @@ public class AppObjectsFromIntentExtraData {
             Log.e(e.toString());
         }
 
-        if (path == null) { // could not extract path so create one taking inputStream from *Provider
+        // we take the *Provider for inputStream to get a copy of the file if:
+        // - we could not extract the file path
+        // - or file path is not readable
+        if (path == null || !new File(path).canRead()) {
 
             File apkDirectory = new File(PathUtil.getRootApkPath(context));
             File outputFile = File.createTempFile("appreciator", ".apk", apkDirectory);
