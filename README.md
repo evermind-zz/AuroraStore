@@ -1,8 +1,24 @@
-### This is a fork of Aurora Store that focus on KitKat atm Sdk v19
+### BEGIN INFO -- This is a fork of Aurora Store that focus on KitKat atm Sdk v19
 * This is only tested on Emulator KitKat 4.4
 * The Theme may be messed up.
 * The app is called 'Aurora Store legacy'
 * The focus is only on KitKat. But it should also run on later versions of Android
+
+#### Update 20210323:
+This version has some 'extras' added. Stuff that I wanted.
+* Working 'BulkUpdate':
+  * foreground service: UpdateService.
+  * handles downloads/updates in service (replaces BulkUpdate service) so app could be 'closed'
+
+Installer:
+* KitKat root installer support
+* More verbose error handling for root installer.
+* Work as installer for apks presented to it
+  * Allow AuroraStore to install apks that are shared/send from other apps
+  * split apks could also be installed if they are shared with AuroraStore legacy (Not on KitKat)
+
+For more details see the git commits. Thats all! Peace
+### END INFO -- This is a fork of Aurora Store that focus on KitKat atm Sdk v19
 
 <img src="https://img.xda-cdn.com/1alP20gvsfJQN9MXLIcblm7aWSo=/https%3A%2F%2Fi.ibb.co%2FScPXnxz%2FFG-2.png" alt="Aurora Logo"><br/><img src="https://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL v3 Logo">
 
